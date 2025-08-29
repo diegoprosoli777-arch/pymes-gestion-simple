@@ -14,7 +14,194 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clientes: {
+        Row: {
+          created_at: string
+          email: string | null
+          empresa: string | null
+          estado: string
+          id: string
+          nombre: string
+          notas: string | null
+          telefono: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          estado?: string
+          id?: string
+          nombre: string
+          notas?: string | null
+          telefono?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          empresa?: string | null
+          estado?: string
+          id?: string
+          nombre?: string
+          notas?: string | null
+          telefono?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gastos: {
+        Row: {
+          created_at: string
+          fecha: string
+          id: string
+          monto: number
+          notas: string | null
+          proveedor: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          fecha?: string
+          id?: string
+          monto?: number
+          notas?: string | null
+          proveedor: string
+          tipo?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          fecha?: string
+          id?: string
+          monto?: number
+          notas?: string | null
+          proveedor?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      productos: {
+        Row: {
+          categoria: string
+          costo: number
+          created_at: string
+          id: string
+          nombre: string
+          precio: number
+          stock_actual: number
+          stock_minimo: number
+          updated_at: string
+        }
+        Insert: {
+          categoria?: string
+          costo?: number
+          created_at?: string
+          id?: string
+          nombre: string
+          precio?: number
+          stock_actual?: number
+          stock_minimo?: number
+          updated_at?: string
+        }
+        Update: {
+          categoria?: string
+          costo?: number
+          created_at?: string
+          id?: string
+          nombre?: string
+          precio?: number
+          stock_actual?: number
+          stock_minimo?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ventas: {
+        Row: {
+          cliente_id: string | null
+          created_at: string
+          estado: string
+          fecha: string
+          id: string
+          metodo_pago: string
+          monto_total: number
+          updated_at: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string
+          estado?: string
+          fecha?: string
+          id?: string
+          metodo_pago?: string
+          monto_total?: number
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string
+          estado?: string
+          fecha?: string
+          id?: string
+          metodo_pago?: string
+          monto_total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ventas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ventas_items: {
+        Row: {
+          cantidad: number
+          created_at: string
+          id: string
+          precio_unitario: number
+          producto_id: string
+          venta_id: string
+        }
+        Insert: {
+          cantidad?: number
+          created_at?: string
+          id?: string
+          precio_unitario?: number
+          producto_id: string
+          venta_id: string
+        }
+        Update: {
+          cantidad?: number
+          created_at?: string
+          id?: string
+          precio_unitario?: number
+          producto_id?: string
+          venta_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ventas_items_producto_id_fkey"
+            columns: ["producto_id"]
+            isOneToOne: false
+            referencedRelation: "productos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ventas_items_venta_id_fkey"
+            columns: ["venta_id"]
+            isOneToOne: false
+            referencedRelation: "ventas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
