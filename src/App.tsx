@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import toast, { Toaster as HotToaster } from 'react-hot-toast';
 import MainLayout from "./components/Layout/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Productos from "./pages/Productos";
@@ -19,6 +20,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <HotToaster position="top-right" />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainLayout />}>

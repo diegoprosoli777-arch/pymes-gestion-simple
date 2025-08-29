@@ -1,75 +1,21 @@
 import { useState } from "react";
-import { Plus, Search, Package, AlertCircle } from "lucide-react";
+import { Plus, Search, Package, AlertCircle, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface Product {
-  id: number;
-  name: string;
-  cost: number;
-  price: number;
-  current_stock: number;
-  minimum_stock: number;
-  category: string;
-}
+import { useProductos } from "@/hooks/useProductos";
+import { ProductoForm } from "@/components/Forms/ProductoForm";
 
 export default function Productos() {
+  const { productos, loading, createProducto, updateProducto, deleteProducto } = useProductos();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingProducto, setEditingProducto] = useState(null);
 
-  // Mock data
-  const mockProducts: Product[] = [
-    {
-      id: 1,
-      name: "Laptop Dell Inspiron 15",
-      cost: 1200,
-      price: 1500,
-      current_stock: 25,
-      minimum_stock: 10,
-      category: "Tecnología"
-    },
-    {
-      id: 2,
-      name: "Mouse Logitech MX",
-      cost: 40,
-      price: 50,
-      current_stock: 5,
-      minimum_stock: 20,
-      category: "Accesorios"
-    },
-    {
-      id: 3,
-      name: "Teclado Mecánico RGB",
-      cost: 180,
-      price: 300,
-      current_stock: 15,
-      minimum_stock: 8,
-      category: "Accesorios"
-    },
-    {
-      id: 4,
-      name: "Monitor Samsung 27''",
-      cost: 350,
-      price: 500,
-      current_stock: 12,
-      minimum_stock: 5,
-      category: "Tecnología"
-    },
-    {
-      id: 5,
-      name: "Impresora HP LaserJet",
-      cost: 400,
-      price: 500,
-      current_stock: 8,
-      minimum_stock: 6,
-      category: "Oficina"
-    }
-  ];
-
-  const filteredProducts = mockProducts.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = productos.filter(product =>
+    product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.categoria.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStockStatus = (current: number, minimum: number) => {
@@ -86,6 +32,34 @@ export default function Productos() {
     return ((price - cost) / price * 100).toFixed(1);
   };
 
+  const handleEdit = (producto) => {
+    setEditingProducto(producto);
+    setIsFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setEditingProducto(null);
+  };
+
+  const handleSubmit = async (data) => {
+    if (editingProducto) {
+      await updateProducto(editingProducto.id, data);
+    } else {
+      await createProducto(data);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+      await deleteProducto(id);
+    }
+  };
+
+  if (loading) {
+    return <div className="p-6">Cargando productos...</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -95,11 +69,19 @@ export default function Productos() {
             Gestiona tu inventario y productos
           </p>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover">
+        <Button className="bg-primary hover:bg-primary-hover" onClick={() => setIsFormOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Producto
         </Button>
       </div>
+
+      <ProductoForm
+        isOpen={isFormOpen}
+        onClose={handleCloseForm}
+        onSubmit={handleSubmit}
+        initialData={editingProducto}
+        title={editingProducto ? 'Editar Producto' : 'Nuevo Producto'}
+      />
 
       {/* Filtros */}
       <Card>
@@ -121,22 +103,22 @@ export default function Productos() {
       {/* Lista de Productos */}
       <div className="grid gap-4">
         {filteredProducts.map((product) => {
-          const stockStatus = getStockStatus(product.current_stock, product.minimum_stock);
-          const margin = calculateMargin(product.cost, product.price);
+          const stockStatus = getStockStatus(product.stock_actual, product.stock_minimo);
+          const margin = calculateMargin(product.costo, product.precio);
           
           return (
             <Card key={product.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
+                <div className="grid grid-cols-1 md:grid-cols-7 gap-4 items-center">
                   <div className="md:col-span-2">
                     <div className="flex items-center space-x-3">
                       <div className="bg-primary/10 p-2 rounded-lg">
                         <Package className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-semibold">{product.name}</h3>
+                        <h3 className="font-semibold">{product.nombre}</h3>
                         <Badge variant="secondary" className="mt-1">
-                          {product.category}
+                          {product.categoria}
                         </Badge>
                       </div>
                     </div>
@@ -144,20 +126,20 @@ export default function Productos() {
                   
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">Costo</p>
-                    <p className="font-semibold">${product.cost}</p>
+                    <p className="font-semibold">${product.costo}</p>
                   </div>
                   
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">Precio</p>
-                    <p className="font-semibold text-success">${product.price}</p>
+                    <p className="font-semibold text-success">${product.precio}</p>
                     <p className="text-xs text-muted-foreground">{margin}% margen</p>
                   </div>
                   
                   <div className="text-center">
                     <p className="text-sm text-muted-foreground">Stock</p>
                     <div className="flex items-center justify-center space-x-2">
-                      <span className="font-semibold">{product.current_stock}</span>
-                      {product.current_stock <= product.minimum_stock && (
+                      <span className="font-semibold">{product.stock_actual}</span>
+                      {product.stock_actual <= product.stock_minimo && (
                         <AlertCircle className="h-4 w-4 text-danger" />
                       )}
                     </div>
@@ -171,9 +153,12 @@ export default function Productos() {
                     </Badge>
                   </div>
                   
-                  <div className="text-center">
-                    <Button variant="outline" size="sm">
-                      Editar
+                  <div className="flex space-x-2 justify-center">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(product)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDelete(product.id)}>
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
