@@ -52,6 +52,7 @@ export type Database = {
       }
       gastos: {
         Row: {
+          categoria_fiscal: string | null
           created_at: string
           fecha: string
           id: string
@@ -62,6 +63,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          categoria_fiscal?: string | null
           created_at?: string
           fecha?: string
           id?: string
@@ -72,6 +74,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          categoria_fiscal?: string | null
           created_at?: string
           fecha?: string
           id?: string
@@ -79,6 +82,124 @@ export type Database = {
           notas?: string | null
           proveedor?: string
           tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      interacciones_clientes: {
+        Row: {
+          cliente_id: string | null
+          created_at: string
+          descripcion: string | null
+          fecha: string | null
+          id: string
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string
+          descripcion?: string | null
+          fecha?: string | null
+          id?: string
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string
+          descripcion?: string | null
+          fecha?: string | null
+          id?: string
+          tipo?: string
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interacciones_clientes_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipeline_clientes: {
+        Row: {
+          cliente_id: string | null
+          created_at: string
+          estado: string
+          fecha_cambio_estado: string | null
+          id: string
+          notas: string | null
+          probabilidad: number | null
+          updated_at: string
+          valor_estimado: number | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          created_at?: string
+          estado?: string
+          fecha_cambio_estado?: string | null
+          id?: string
+          notas?: string | null
+          probabilidad?: number | null
+          updated_at?: string
+          valor_estimado?: number | null
+        }
+        Update: {
+          cliente_id?: string | null
+          created_at?: string
+          estado?: string
+          fecha_cambio_estado?: string | null
+          id?: string
+          notas?: string | null
+          probabilidad?: number | null
+          updated_at?: string
+          valor_estimado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_clientes_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      presupuestos_mensuales: {
+        Row: {
+          año: number
+          created_at: string
+          gastos_esperados: number | null
+          id: string
+          ingresos_esperados: number | null
+          mes: number
+          notas: string | null
+          objetivo_ventas: number | null
+          updated_at: string
+        }
+        Insert: {
+          año: number
+          created_at?: string
+          gastos_esperados?: number | null
+          id?: string
+          ingresos_esperados?: number | null
+          mes: number
+          notas?: string | null
+          objetivo_ventas?: number | null
+          updated_at?: string
+        }
+        Update: {
+          año?: number
+          created_at?: string
+          gastos_esperados?: number | null
+          id?: string
+          ingresos_esperados?: number | null
+          mes?: number
+          notas?: string | null
+          objetivo_ventas?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -119,13 +240,109 @@ export type Database = {
         }
         Relationships: []
       }
+      tareas_clientes: {
+        Row: {
+          cliente_id: string | null
+          completada: boolean | null
+          created_at: string
+          descripcion: string | null
+          fecha_completado: string | null
+          fecha_vencimiento: string | null
+          id: string
+          prioridad: string | null
+          tipo: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          cliente_id?: string | null
+          completada?: boolean | null
+          created_at?: string
+          descripcion?: string | null
+          fecha_completado?: string | null
+          fecha_vencimiento?: string | null
+          id?: string
+          prioridad?: string | null
+          tipo?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string | null
+          completada?: boolean | null
+          created_at?: string
+          descripcion?: string | null
+          fecha_completado?: string | null
+          fecha_vencimiento?: string | null
+          id?: string
+          prioridad?: string | null
+          tipo?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tareas_clientes_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vencimientos_impositivos: {
+        Row: {
+          completado: boolean | null
+          created_at: string
+          descripcion: string | null
+          fecha_completado: string | null
+          fecha_vencimiento: string
+          id: string
+          monto_estimado: number | null
+          nombre: string
+          notas: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          completado?: boolean | null
+          created_at?: string
+          descripcion?: string | null
+          fecha_completado?: string | null
+          fecha_vencimiento: string
+          id?: string
+          monto_estimado?: number | null
+          nombre: string
+          notas?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Update: {
+          completado?: boolean | null
+          created_at?: string
+          descripcion?: string | null
+          fecha_completado?: string | null
+          fecha_vencimiento?: string
+          id?: string
+          monto_estimado?: number | null
+          nombre?: string
+          notas?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ventas: {
         Row: {
           cliente_id: string | null
           created_at: string
+          descuento: number | null
           estado: string
           fecha: string
+          fecha_cobro: string | null
+          fecha_vencimiento: string | null
           id: string
+          impuesto: number | null
           metodo_pago: string
           monto_total: number
           updated_at: string
@@ -133,9 +350,13 @@ export type Database = {
         Insert: {
           cliente_id?: string | null
           created_at?: string
+          descuento?: number | null
           estado?: string
           fecha?: string
+          fecha_cobro?: string | null
+          fecha_vencimiento?: string | null
           id?: string
+          impuesto?: number | null
           metodo_pago?: string
           monto_total?: number
           updated_at?: string
@@ -143,9 +364,13 @@ export type Database = {
         Update: {
           cliente_id?: string | null
           created_at?: string
+          descuento?: number | null
           estado?: string
           fecha?: string
+          fecha_cobro?: string | null
+          fecha_vencimiento?: string | null
           id?: string
+          impuesto?: number | null
           metodo_pago?: string
           monto_total?: number
           updated_at?: string

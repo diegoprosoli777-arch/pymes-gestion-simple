@@ -6,15 +6,23 @@ import {
   ShoppingCart, 
   Receipt, 
   FileText,
-  Building2
+  Building2,
+  TrendingUp,
+  Calculator,
+  UserCheck,
+  BarChart3
 } from "lucide-react";
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Productos', href: '/productos', icon: Package },
   { name: 'Clientes', href: '/clientes', icon: Users },
+  { name: 'CRM', href: '/crm', icon: UserCheck },
   { name: 'Ventas', href: '/ventas', icon: ShoppingCart },
   { name: 'Gastos', href: '/gastos', icon: Receipt },
+  { name: 'Financiamiento', href: '/financiamiento', icon: TrendingUp },
+  { name: 'Tributaria', href: '/tributaria', icon: Calculator },
+  { name: 'Planificación', href: '/planificacion', icon: BarChart3 },
   { name: 'Reportes', href: '/reportes', icon: FileText },
 ];
 
