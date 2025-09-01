@@ -1,99 +1,47 @@
 import { useState } from "react";
-import { Plus, Search, User, Mail, Phone, Building } from "lucide-react";
+import { Plus, Search, User, Mail, Phone, Building, Edit, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface Client {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  company: string;
-  status: 'prospecto' | 'activo' | 'inactivo';
-  total_revenue: number;
-  last_purchase: string;
-}
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useClientes } from "@/hooks/useClientes";
+import { ClienteForm } from "@/components/Forms/ClienteForm";
+import { exportClientesReport } from "@/lib/excel";
+import toast from "react-hot-toast";
 
 export default function Clientes() {
+  const { clientes, loading, deleteCliente } = useClientes();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCliente, setEditingCliente] = useState<any>(null);
+  const [viewingCliente, setViewingCliente] = useState<any>(null);
 
-  // Mock data
-  const mockClients: Client[] = [
-    {
-      id: 1,
-      name: "Juan Carlos Pérez",
-      email: "juan.perez@techsolutions.com",
-      phone: "+52 55 1234 5678",
-      company: "Tech Solutions S.A.",
-      status: "activo",
-      total_revenue: 25400,
-      last_purchase: "2024-01-15"
-    },
-    {
-      id: 2,
-      name: "María González",
-      email: "maria@innovacion.com",
-      phone: "+52 55 8765 4321",
-      company: "Innovación Digital",
-      status: "activo",
-      total_revenue: 18750,
-      last_purchase: "2024-01-12"
-    },
-    {
-      id: 3,
-      name: "Roberto Silva",
-      email: "r.silva@sistemas.com",
-      phone: "+52 55 2468 1357",
-      company: "Sistemas Avanzados",
-      status: "prospecto",
-      total_revenue: 0,
-      last_purchase: "N/A"
-    },
-    {
-      id: 4,
-      name: "Ana Martínez",
-      email: "ana@devmovil.com",
-      phone: "+52 55 9753 8642",
-      company: "Desarrollo Móvil",
-      status: "activo",
-      total_revenue: 12800,
-      last_purchase: "2024-01-08"
-    },
-    {
-      id: 5,
-      name: "Carlos Rodríguez",
-      email: "carlos@webcorp.com",
-      phone: "+52 55 1357 9246",
-      company: "WebCorp Internacional",
-      status: "inactivo",
-      total_revenue: 11500,
-      last_purchase: "2023-11-20"
-    }
-  ];
+  if (loading) {
+    return <div className="p-6">Cargando clientes...</div>;
+  }
 
-  const filteredClients = mockClients.filter(client =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.company.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredClients = clientes.filter(cliente =>
+    cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cliente.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cliente.empresa?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  const getStatusColor = (estado: string) => {
+    switch (estado) {
       case 'activo':
-        return 'bg-success text-success-foreground';
+        return 'bg-green-100 text-green-800';
       case 'prospecto':
-        return 'bg-warning text-warning-foreground';
+        return 'bg-yellow-100 text-yellow-800';
       case 'inactivo':
-        return 'bg-muted text-muted-foreground';
+        return 'bg-gray-100 text-gray-800';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
+  const getStatusLabel = (estado: string) => {
+    switch (estado) {
       case 'activo':
         return 'Activo';
       case 'prospecto':
@@ -101,8 +49,33 @@ export default function Clientes() {
       case 'inactivo':
         return 'Inactivo';
       default:
-        return status;
+        return estado;
     }
+  };
+
+  const handleEdit = (cliente: any) => {
+    setEditingCliente(cliente);
+    setIsFormOpen(true);
+  };
+
+  const handleView = (cliente: any) => {
+    setViewingCliente(cliente);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('¿Está seguro de eliminar este cliente?')) {
+      await deleteCliente(id);
+    }
+  };
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setEditingCliente(null);
+  };
+
+  const handleExport = () => {
+    exportClientesReport(clientes);
+    toast.success('Reporte de clientes exportado');
   };
 
   return (
@@ -114,10 +87,30 @@ export default function Clientes() {
             Gestiona tu cartera de clientes
           </p>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover">
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo Cliente
-        </Button>
+        <div className="flex space-x-2">
+          <Button variant="outline" onClick={handleExport}>
+            Exportar Excel
+          </Button>
+          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nuevo Cliente
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingCliente ? 'Editar Cliente' : 'Nuevo Cliente'}
+                </DialogTitle>
+              </DialogHeader>
+              <ClienteForm
+                onClose={handleCloseForm}
+                initialData={editingCliente}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Filtros */}
@@ -139,8 +132,8 @@ export default function Clientes() {
 
       {/* Lista de Clientes */}
       <div className="grid gap-4">
-        {filteredClients.map((client) => (
-          <Card key={client.id} className="hover:shadow-md transition-shadow">
+        {filteredClients.map((cliente) => (
+          <Card key={cliente.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                 {/* Información del Cliente */}
@@ -151,48 +144,72 @@ export default function Clientes() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="font-semibold text-lg">{client.name}</h3>
-                        <Badge className={getStatusColor(client.status)}>
-                          {getStatusLabel(client.status)}
+                        <h3 className="font-semibold text-lg">{cliente.nombre}</h3>
+                        <Badge className={getStatusColor(cliente.estado)}>
+                          {getStatusLabel(cliente.estado)}
                         </Badge>
                       </div>
                       
                       <div className="space-y-1 text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-2">
-                          <Mail className="h-4 w-4" />
-                          <span>{client.email}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Phone className="h-4 w-4" />
-                          <span>{client.phone}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Building className="h-4 w-4" />
-                          <span>{client.company}</span>
-                        </div>
+                        {cliente.email && (
+                          <div className="flex items-center space-x-2">
+                            <Mail className="h-4 w-4" />
+                            <span>{cliente.email}</span>
+                          </div>
+                        )}
+                        {cliente.telefono && (
+                          <div className="flex items-center space-x-2">
+                            <Phone className="h-4 w-4" />
+                            <span>{cliente.telefono}</span>
+                          </div>
+                        )}
+                        {cliente.empresa && (
+                          <div className="flex items-center space-x-2">
+                            <Building className="h-4 w-4" />
+                            <span>{cliente.empresa}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Métricas */}
+                {/* Información adicional */}
                 <div className="text-center lg:text-left">
-                  <p className="text-sm text-muted-foreground">Facturación Total</p>
-                  <p className="text-2xl font-bold text-success">
-                    ${client.total_revenue.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Última compra: {client.last_purchase}
-                  </p>
+                  <p className="text-sm text-muted-foreground">Estado</p>
+                  <p className="text-lg font-medium">{getStatusLabel(cliente.estado)}</p>
+                  {cliente.notas && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      "{cliente.notas}"
+                    </p>
+                  )}
                 </div>
 
                 {/* Acciones */}
                 <div className="flex items-center justify-end space-x-2">
-                  <Button variant="outline" size="sm">
-                    Ver Historial
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleView(cliente)}
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    Ver
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleEdit(cliente)}
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
                     Editar
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleDelete(cliente.id)}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -200,6 +217,51 @@ export default function Clientes() {
           </Card>
         ))}
       </div>
+
+      {/* Dialog para ver detalles del cliente */}
+      <Dialog open={!!viewingCliente} onOpenChange={() => setViewingCliente(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detalles del Cliente</DialogTitle>
+          </DialogHeader>
+          {viewingCliente && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-lg">{viewingCliente.nombre}</h3>
+                <Badge className={getStatusColor(viewingCliente.estado)}>
+                  {getStatusLabel(viewingCliente.estado)}
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Email</label>
+                  <p className="text-sm">{viewingCliente.email || 'No especificado'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Teléfono</label>
+                  <p className="text-sm">{viewingCliente.telefono || 'No especificado'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Empresa</label>
+                  <p className="text-sm">{viewingCliente.empresa || 'No especificado'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Fecha de registro</label>
+                  <p className="text-sm">{new Date(viewingCliente.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+              
+              {viewingCliente.notas && (
+                <div>
+                  <label className="text-sm font-medium">Notas</label>
+                  <p className="text-sm bg-gray-50 p-2 rounded">{viewingCliente.notas}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {filteredClients.length === 0 && (
         <Card>

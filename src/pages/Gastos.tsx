@@ -1,79 +1,59 @@
 import { useState } from "react";
-import { Plus, Search, Receipt, Calendar } from "lucide-react";
+import { Plus, Search, Receipt, Calendar, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface Expense {
-  id: number;
-  date: string;
-  provider: string;
-  amount: number;
-  type: 'operativo' | 'insumo' | 'otro';
-  notes: string;
-}
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useGastos } from "@/hooks/useGastos";
+import { GastoForm } from "@/components/Forms/GastoForm";
+import { exportToExcel } from "@/lib/excel";
+import toast from "react-hot-toast";
 
 export default function Gastos() {
+  const { gastos, loading, deleteGasto } = useGastos();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingGasto, setEditingGasto] = useState<any>(null);
 
-  // Mock data
-  const mockExpenses: Expense[] = [
-    {
-      id: 501,
-      date: "2024-01-15",
-      provider: "Distribuidora Tech",
-      amount: 12500,
-      type: "insumo",
-      notes: "Compra de inventario mensual"
-    },
-    {
-      id: 502,
-      date: "2024-01-12",
-      provider: "CFE",
-      amount: 2400,
-      type: "operativo",
-      notes: "Pago de electricidad"
-    },
-    {
-      id: 503,
-      date: "2024-01-10",
-      provider: "Publicidad Online",
-      amount: 3500,
-      type: "otro",
-      notes: "Campaña publicitaria Google Ads"
-    },
-    {
-      id: 504,
-      date: "2024-01-08",
-      provider: "Proveedor Local",
-      amount: 8900,
-      type: "insumo",
-      notes: "Mercancía para reventa"
-    },
-    {
-      id: 505,
-      date: "2024-01-05",
-      provider: "Telmex",
-      amount: 1200,
-      type: "operativo",
-      notes: "Internet y telefonía"
-    },
-    {
-      id: 506,
-      date: "2024-01-03",
-      provider: "Limpieza Profesional",
-      amount: 800,
-      type: "operativo",
-      notes: "Servicio de limpieza"
-    }
-  ];
+  if (loading) {
+    return <div className="p-6">Cargando gastos...</div>;
+  }
 
-  const filteredExpenses = mockExpenses.filter(expense =>
-    expense.provider.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.notes.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.type.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredGastos = gastos.filter(gasto =>
+    gasto.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (gasto.notas && gasto.notas.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    gasto.tipo.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleEdit = (gasto: any) => {
+    setEditingGasto(gasto);
+    setIsFormOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('¿Está seguro de eliminar este gasto?')) {
+      await deleteGasto(id);
+    }
+  };
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setEditingGasto(null);
+  };
+
+  const handleExport = () => {
+    const reportData = gastos.map(gasto => ({
+      Fecha: gasto.fecha,
+      Proveedor: gasto.proveedor,
+      Monto: gasto.monto,
+      Tipo: gasto.tipo,
+      'Categoría Fiscal': gasto.categoria_fiscal,
+      Notas: gasto.notas || ''
+    }));
+    exportToExcel(reportData, 'reporte-gastos', 'Gastos');
+    toast.success('Reporte de gastos exportado');
+  };
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -110,11 +90,11 @@ export default function Gastos() {
     });
   };
 
-  const totalGastos = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const totalGastos = filteredGastos.reduce((sum, gasto) => sum + gasto.monto, 0);
   const gastosPorTipo = {
-    operativo: filteredExpenses.filter(e => e.type === 'operativo').reduce((sum, e) => sum + e.amount, 0),
-    insumo: filteredExpenses.filter(e => e.type === 'insumo').reduce((sum, e) => sum + e.amount, 0),
-    otro: filteredExpenses.filter(e => e.type === 'otro').reduce((sum, e) => sum + e.amount, 0)
+    operativo: filteredGastos.filter(g => g.tipo === 'operativo').reduce((sum, g) => sum + g.monto, 0),
+    insumo: filteredGastos.filter(g => g.tipo === 'insumo').reduce((sum, g) => sum + g.monto, 0),
+    otro: filteredGastos.filter(g => g.tipo === 'otro').reduce((sum, g) => sum + g.monto, 0)
   };
 
   return (
@@ -126,10 +106,30 @@ export default function Gastos() {
             Controla los gastos de tu negocio
           </p>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover">
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo Gasto
-        </Button>
+        <div className="flex space-x-2">
+          <Button variant="outline" onClick={handleExport}>
+            Exportar Excel
+          </Button>
+          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nuevo Gasto
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingGasto ? 'Editar Gasto' : 'Nuevo Gasto'}
+                </DialogTitle>
+              </DialogHeader>
+              <GastoForm
+                onClose={handleCloseForm}
+                initialData={editingGasto}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Resumen */}
@@ -208,21 +208,21 @@ export default function Gastos() {
 
       {/* Lista de Gastos */}
       <div className="grid gap-4">
-        {filteredExpenses.map((expense) => (
-          <Card key={expense.id} className="hover:shadow-md transition-shadow">
+        {filteredGastos.map((gasto) => (
+          <Card key={gasto.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
                 <div className="lg:col-span-2">
                   <div className="flex items-start space-x-3">
-                    <div className="bg-danger/10 p-2 rounded-lg">
-                      <Receipt className="h-5 w-5 text-danger" />
+                    <div className="bg-red-100 p-2 rounded-lg">
+                      <Receipt className="h-5 w-5 text-red-600" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold">Gasto #{expense.id}</h3>
-                      <p className="text-sm text-muted-foreground">{expense.provider}</p>
+                      <h3 className="font-semibold">Gasto #{gasto.id.slice(-8)}</h3>
+                      <p className="text-sm text-muted-foreground">{gasto.proveedor}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">{formatDate(expense.date)}</span>
+                        <span className="text-sm text-muted-foreground">{formatDate(gasto.fecha)}</span>
                       </div>
                     </div>
                   </div>
@@ -230,26 +230,48 @@ export default function Gastos() {
                 
                 <div className="text-center lg:text-left">
                   <p className="text-sm text-muted-foreground">Monto</p>
-                  <p className="text-xl font-bold text-danger">${expense.amount.toLocaleString()}</p>
+                  <p className="text-xl font-bold text-red-600">${gasto.monto.toLocaleString()}</p>
                 </div>
                 
                 <div className="text-center lg:text-left">
-                  <Badge className={getTypeColor(expense.type)}>
-                    {getTypeLabel(expense.type)}
+                  <Badge className={getTypeColor(gasto.tipo)}>
+                    {getTypeLabel(gasto.tipo)}
                   </Badge>
+                  {gasto.categoria_fiscal && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {gasto.categoria_fiscal}
+                    </p>
+                  )}
                 </div>
                 
                 <div className="text-center lg:text-left">
-                  <div className="bg-muted/50 p-3 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Notas:</p>
-                    <p className="text-sm mt-1">{expense.notes}</p>
-                  </div>
+                  {gasto.notas ? (
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Notas:</p>
+                      <p className="text-sm mt-1">{gasto.notas}</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Sin notas</p>
+                  )}
                 </div>
               </div>
               
-              <div className="mt-4 flex justify-end">
-                <Button variant="outline" size="sm">
+              <div className="mt-4 flex justify-end space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleEdit(gasto)}
+                >
+                  <Edit className="h-4 w-4 mr-1" />
                   Editar
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleDelete(gasto.id)}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </CardContent>
@@ -257,7 +279,7 @@ export default function Gastos() {
         ))}
       </div>
 
-      {filteredExpenses.length === 0 && (
+      {filteredGastos.length === 0 && (
         <Card>
           <CardContent className="p-8 text-center">
             <Receipt className="h-12 w-12 text-muted-foreground mx-auto mb-4" />

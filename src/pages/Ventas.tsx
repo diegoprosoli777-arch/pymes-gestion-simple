@@ -1,76 +1,43 @@
 import { useState } from "react";
-import { Plus, Search, ShoppingCart, Calendar, DollarSign } from "lucide-react";
+import { Plus, Search, ShoppingCart, Calendar, DollarSign, Eye, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface Sale {
-  id: number;
-  date: string;
-  client_name: string;
-  total_amount: number;
-  payment_method: string;
-  status: 'cobrada' | 'pendiente';
-  items_count: number;
-}
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useVentas } from "@/hooks/useVentas";
+import { VentaForm } from "@/components/Forms/VentaForm";
+import { exportVentasReport } from "@/lib/excel";
+import toast from "react-hot-toast";
 
 export default function Ventas() {
+  const { ventas, loading, updateVentaEstado } = useVentas();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [viewingVenta, setViewingVenta] = useState<any>(null);
 
-  // Mock data
-  const mockSales: Sale[] = [
-    {
-      id: 1001,
-      date: "2024-01-15",
-      client_name: "Tech Solutions S.A.",
-      total_amount: 4500,
-      payment_method: "transferencia",
-      status: "cobrada",
-      items_count: 3
-    },
-    {
-      id: 1002,
-      date: "2024-01-14",
-      client_name: "Innovación Digital",
-      total_amount: 1250,
-      payment_method: "tarjeta",
-      status: "pendiente",
-      items_count: 5
-    },
-    {
-      id: 1003,
-      date: "2024-01-12",
-      client_name: "Desarrollo Móvil",
-      total_amount: 3200,
-      payment_method: "efectivo",
-      status: "cobrada",
-      items_count: 2
-    },
-    {
-      id: 1004,
-      date: "2024-01-10",
-      client_name: "WebCorp Internacional",
-      total_amount: 890,
-      payment_method: "tarjeta",
-      status: "pendiente",
-      items_count: 4
-    },
-    {
-      id: 1005,
-      date: "2024-01-08",
-      client_name: "Sistemas Avanzados",
-      total_amount: 2100,
-      payment_method: "transferencia",
-      status: "cobrada",
-      items_count: 1
-    }
-  ];
+  if (loading) {
+    return <div className="p-6">Cargando ventas...</div>;
+  }
 
-  const filteredSales = mockSales.filter(sale =>
-    sale.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    sale.id.toString().includes(searchTerm)
+  const filteredVentas = ventas.filter(venta =>
+    venta.cliente?.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    venta.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleView = (venta: any) => {
+    setViewingVenta(venta);
+  };
+
+  const handleStatusChange = async (id: string, estado: 'cobrada' | 'pendiente') => {
+    await updateVentaEstado(id, estado);
+  };
+
+  const handleExport = () => {
+    // Necesitamos obtener los items de ventas y productos para el reporte
+    exportVentasReport(ventas, [], [], []);
+    toast.success('Reporte de ventas exportado');
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -105,9 +72,9 @@ export default function Ventas() {
     });
   };
 
-  const totalVentas = filteredSales.reduce((sum, sale) => sum + sale.total_amount, 0);
-  const ventasCobradas = filteredSales.filter(sale => sale.status === 'cobrada').length;
-  const ventasPendientes = filteredSales.filter(sale => sale.status === 'pendiente').length;
+  const totalVentas = filteredVentas.reduce((sum, venta) => sum + venta.monto_total, 0);
+  const ventasCobradas = filteredVentas.filter(venta => venta.estado === 'cobrada').length;
+  const ventasPendientes = filteredVentas.filter(venta => venta.estado === 'pendiente').length;
 
   return (
     <div className="space-y-6">
@@ -118,10 +85,25 @@ export default function Ventas() {
             Gestiona las ventas de tu negocio
           </p>
         </div>
-        <Button className="bg-primary hover:bg-primary-hover">
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Venta
-        </Button>
+        <div className="flex space-x-2">
+          <Button variant="outline" onClick={handleExport}>
+            Exportar Excel
+          </Button>
+          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nueva Venta
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Nueva Venta</DialogTitle>
+              </DialogHeader>
+              <VentaForm onClose={() => setIsFormOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Resumen */}
@@ -143,7 +125,7 @@ export default function Ventas() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Órdenes</p>
-                <p className="text-2xl font-bold">{filteredSales.length}</p>
+                <p className="text-2xl font-bold">{filteredVentas.length}</p>
               </div>
               <ShoppingCart className="h-8 w-8 text-primary" />
             </div>
@@ -198,8 +180,8 @@ export default function Ventas() {
 
       {/* Lista de Ventas */}
       <div className="grid gap-4">
-        {filteredSales.map((sale) => (
-          <Card key={sale.id} className="hover:shadow-md transition-shadow">
+        {filteredVentas.map((venta) => (
+          <Card key={venta.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 items-center">
                 <div className="lg:col-span-2">
@@ -208,8 +190,10 @@ export default function Ventas() {
                       <ShoppingCart className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Venta #{sale.id}</h3>
-                      <p className="text-sm text-muted-foreground">{sale.client_name}</p>
+                      <h3 className="font-semibold">Venta #{venta.id.slice(-8)}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {venta.cliente?.nombre || 'Cliente no especificado'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -217,29 +201,38 @@ export default function Ventas() {
                 <div className="text-center lg:text-left">
                   <div className="flex items-center space-x-2 lg:justify-start justify-center">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{formatDate(sale.date)}</span>
+                    <span className="text-sm">{formatDate(venta.fecha)}</span>
                   </div>
                 </div>
                 
                 <div className="text-center lg:text-left">
                   <p className="text-sm text-muted-foreground">Monto</p>
-                  <p className="text-xl font-bold text-success">${sale.total_amount.toLocaleString()}</p>
+                  <p className="text-xl font-bold text-success">${venta.monto_total.toLocaleString()}</p>
                 </div>
                 
                 <div className="text-center lg:text-left">
-                  <p className="text-sm text-muted-foreground">{getPaymentMethodLabel(sale.payment_method)}</p>
-                  <p className="text-sm">{sale.items_count} productos</p>
+                  <p className="text-sm text-muted-foreground">{getPaymentMethodLabel(venta.metodo_pago)}</p>
+                  <p className="text-sm">{venta.items?.length || 0} productos</p>
                 </div>
                 
                 <div className="text-center lg:text-left">
-                  <Badge className={getStatusColor(sale.status)}>
-                    {sale.status === 'cobrada' ? 'Cobrada' : 'Pendiente'}
+                  <Badge 
+                    className={getStatusColor(venta.estado)}
+                    onClick={() => handleStatusChange(venta.id, venta.estado === 'cobrada' ? 'pendiente' : 'cobrada')}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {venta.estado === 'cobrada' ? 'Cobrada' : 'Pendiente'}
                   </Badge>
                 </div>
                 
-                <div className="text-center">
-                  <Button variant="outline" size="sm">
-                    Ver Detalles
+                <div className="text-center flex space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleView(venta)}
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    Ver
                   </Button>
                 </div>
               </div>
@@ -248,7 +241,66 @@ export default function Ventas() {
         ))}
       </div>
 
-      {filteredSales.length === 0 && (
+      {/* Dialog para ver detalles de la venta */}
+      <Dialog open={!!viewingVenta} onOpenChange={() => setViewingVenta(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detalles de la Venta</DialogTitle>
+          </DialogHeader>
+          {viewingVenta && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-lg">Venta #{viewingVenta.id.slice(-8)}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {viewingVenta.cliente?.nombre || 'Cliente no especificado'}
+                  </p>
+                </div>
+                <Badge className={getStatusColor(viewingVenta.estado)}>
+                  {viewingVenta.estado === 'cobrada' ? 'Cobrada' : 'Pendiente'}
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Fecha</label>
+                  <p className="text-sm">{formatDate(viewingVenta.fecha)}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Monto Total</label>
+                  <p className="text-sm font-bold">${viewingVenta.monto_total.toLocaleString()}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Método de Pago</label>
+                  <p className="text-sm">{getPaymentMethodLabel(viewingVenta.metodo_pago)}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Estado</label>
+                  <p className="text-sm">{viewingVenta.estado === 'cobrada' ? 'Cobrada' : 'Pendiente'}</p>
+                </div>
+              </div>
+              
+              {viewingVenta.items && viewingVenta.items.length > 0 && (
+                <div>
+                  <label className="text-sm font-medium">Productos</label>
+                  <div className="mt-2 space-y-2">
+                    {viewingVenta.items.map((item: any, index: number) => (
+                      <div key={index} className="bg-gray-50 p-2 rounded text-sm">
+                        <span className="font-medium">{item.producto?.nombre}</span>
+                        <span className="text-muted-foreground ml-2">
+                          {item.cantidad} x ${item.precio_unitario} = ${(item.cantidad * item.precio_unitario).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {filteredVentas.length === 0 && (
         <Card>
           <CardContent className="p-8 text-center">
             <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />

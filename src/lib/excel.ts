@@ -27,51 +27,11 @@ export const importFromExcel = (file: File): Promise<any[]> => {
   });
 };
 
-export const exportVentasReport = (ventas: any[], ventasItems: any[], productos: any[], clientes: any[]) => {
-  const reportData = ventas.map(venta => {
-    const cliente = clientes.find(c => c.id === venta.cliente_id);
-    const items = ventasItems.filter(item => item.venta_id === venta.id);
-    const itemsDetail = items.map(item => {
-      const producto = productos.find(p => p.id === item.producto_id);
-      return `${producto?.nombre} (${item.cantidad}x${item.precio_unitario})`;
-    }).join(', ');
-    
-    return {
-      Fecha: venta.fecha,
-      Cliente: cliente?.nombre || 'N/A',
-      'Monto Total': venta.monto_total,
-      'Método de Pago': venta.metodo_pago,
-      Estado: venta.estado,
-      'Productos Vendidos': itemsDetail
-    };
-  });
-  
-  exportToExcel(reportData, 'reporte-ventas', 'Ventas');
-};
-
-export const exportProductosReport = (productos: any[]) => {
-  const reportData = productos.map(producto => ({
-    Nombre: producto.nombre,
-    Costo: producto.costo,
-    Precio: producto.precio,
-    'Stock Actual': producto.stock_actual,
-    'Stock Mínimo': producto.stock_minimo,
-    Categoría: producto.categoria,
-    'Margen %': (((producto.precio - producto.costo) / producto.precio) * 100).toFixed(1)
-  }));
-  
-  exportToExcel(reportData, 'reporte-productos', 'Productos');
-};
-
-export const exportClientesReport = (clientes: any[]) => {
-  const reportData = clientes.map(cliente => ({
-    Nombre: cliente.nombre,
-    Email: cliente.email,
-    Teléfono: cliente.telefono,
-    Empresa: cliente.empresa,
-    Estado: cliente.estado,
-    Notas: cliente.notas
-  }));
-  
-  exportToExcel(reportData, 'reporte-clientes', 'Clientes');
-};
+// Re-export template functions with enhanced formatting
+export { 
+  exportVentasReportTemplate as exportVentasReport,
+  exportProductosReportTemplate as exportProductosReport, 
+  exportClientesReportTemplate as exportClientesReport,
+  exportGastosReportTemplate as exportGastosReport,
+  exportFinancieroReportTemplate as exportFinancieroReport
+} from './excel-templates';

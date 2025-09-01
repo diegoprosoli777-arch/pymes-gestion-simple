@@ -47,8 +47,11 @@ export const useVentas = () => {
           cliente:clientes(nombre, empresa),
           items:ventas_items(
             id,
+            venta_id,
+            producto_id,
             cantidad,
             precio_unitario,
+            created_at,
             producto:productos(nombre)
           )
         `)
