@@ -12,8 +12,9 @@ import {
   exportProductosReport, 
   exportGastosReport,
   exportFinancieroReport
-} from "@/lib/excel-templates";
+} from "@/lib/excel";
 import { useFinanciamiento } from "@/hooks/useFinanciamiento";
+import { exportCentralizedReport } from "@/lib/centralized-export";
 import toast from "react-hot-toast";
 
 export default function Reportes() {
@@ -100,7 +101,7 @@ export default function Reportes() {
       case 'stock-bajo':
         const stockBajo = productos.filter(p => p.stock_actual <= p.stock_minimo);
         if (stockBajo.length === 0) {
-          toast.info('Todos los productos tienen stock adecuado');
+          toast('Todos los productos tienen stock adecuado');
           return;
         }
         exportProductosReport(stockBajo);
@@ -174,6 +175,44 @@ export default function Reportes() {
         <p className="text-muted-foreground mt-2">
           Exporta y analiza los datos de tu negocio
         </p>
+      </div>
+
+      {/* Reporte Centralizado */}
+      <div className="mb-6">
+        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">📊 Reporte Completo del Negocio</h2>
+                <p className="text-muted-foreground">
+                  Descarga un archivo Excel completo con todas tus datos organizados en múltiples hojas:
+                  Resumen, Clientes, Inventario, Ventas, Gastos, Análisis Financiero y Top Rankings.
+                </p>
+                <div className="mt-3 text-sm text-muted-foreground">
+                  ✅ {clientes.length} clientes • ✅ {productos.length} productos • ✅ {ventas.length} ventas • ✅ {gastos.length} gastos
+                </div>
+              </div>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-primary to-secondary"
+                onClick={() => {
+                  exportCentralizedReport({
+                    clientes,
+                    ventas,
+                    productos,
+                    gastos,
+                    flujoCaja,
+                    kpisFinancieros
+                  });
+                  toast.success('¡Reporte completo exportado exitosamente!');
+                }}
+              >
+                <Download className="h-5 w-5 mr-2" />
+                Exportar Todo
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Reportes Rápidos */}

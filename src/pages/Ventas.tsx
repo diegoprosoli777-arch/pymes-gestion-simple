@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useVentas } from "@/hooks/useVentas";
 import { VentaForm } from "@/components/Forms/VentaForm";
-import { exportVentasReport } from "@/lib/excel";
+import { exportToExcel } from "@/lib/excel";
 import toast from "react-hot-toast";
 
 export default function Ventas() {
-  const { ventas, loading, updateVentaEstado } = useVentas();
+  const { ventas, loading, updateVentaEstado, createVenta } = useVentas();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [viewingVenta, setViewingVenta] = useState<any>(null);
@@ -34,8 +34,16 @@ export default function Ventas() {
   };
 
   const handleExport = () => {
-    // Necesitamos obtener los items de ventas y productos para el reporte
-    exportVentasReport(ventas, [], [], []);
+    const reportData = ventas.map(venta => ({
+      ID: venta.id.slice(-8),
+      Fecha: new Date(venta.fecha).toLocaleDateString('es-ES'),
+      Cliente: venta.cliente?.nombre || 'Sin cliente',
+      'Método Pago': venta.metodo_pago,
+      'Monto Total': venta.monto_total,
+      Estado: venta.estado,
+      'Productos': venta.items?.length || 0
+    }));
+    exportToExcel(reportData, 'reporte-ventas', 'Ventas');
     toast.success('Reporte de ventas exportado');
   };
 
@@ -100,7 +108,12 @@ export default function Ventas() {
               <DialogHeader>
                 <DialogTitle>Nueva Venta</DialogTitle>
               </DialogHeader>
-              <VentaForm onClose={() => setIsFormOpen(false)} />
+            <VentaForm 
+              isOpen={isFormOpen}
+              onClose={() => setIsFormOpen(false)} 
+              onSubmit={createVenta}
+              title="Nueva Venta"
+            />
             </DialogContent>
           </Dialog>
         </div>

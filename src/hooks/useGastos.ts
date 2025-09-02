@@ -8,6 +8,7 @@ export interface Gasto {
   proveedor: string;
   monto: number;
   tipo: 'operativo' | 'insumo' | 'otro';
+  categoria_fiscal: string;
   notas?: string;
   created_at: string;
   updated_at: string;

@@ -10,7 +10,7 @@ import { Cliente } from "@/hooks/useClientes";
 interface ClienteFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Omit<Cliente, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  onSubmit: (data: Omit<Cliente, 'id' | 'created_at' | 'updated_at'>) => Promise<any>;
   initialData?: Cliente;
   title: string;
 }

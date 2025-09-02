@@ -13,7 +13,7 @@ import { Venta, VentaItem } from "@/hooks/useVentas";
 interface VentaFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (venta: Omit<Venta, 'id' | 'created_at' | 'updated_at'>, items: Omit<VentaItem, 'id' | 'venta_id' | 'created_at'>[]) => Promise<void>;
+  onSubmit: (venta: Omit<Venta, 'id' | 'created_at' | 'updated_at'>, items: Omit<VentaItem, 'id' | 'venta_id' | 'created_at'>[]) => Promise<any>;
   title: string;
 }
 

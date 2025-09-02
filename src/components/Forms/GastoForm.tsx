@@ -10,7 +10,7 @@ import { Gasto } from "@/hooks/useGastos";
 interface GastoFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Omit<Gasto, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  onSubmit: (data: Omit<Gasto, 'id' | 'created_at' | 'updated_at'>) => Promise<any>;
   initialData?: Gasto;
   title: string;
 }
@@ -21,6 +21,7 @@ export const GastoForm = ({ isOpen, onClose, onSubmit, initialData, title }: Gas
     proveedor: initialData?.proveedor || '',
     monto: initialData?.monto || 0,
     tipo: initialData?.tipo || 'operativo' as const,
+    categoria_fiscal: initialData?.categoria_fiscal || 'operativo',
     notas: initialData?.notas || ''
   });
   const [loading, setLoading] = useState(false);
@@ -37,6 +38,7 @@ export const GastoForm = ({ isOpen, onClose, onSubmit, initialData, title }: Gas
         proveedor: '',
         monto: 0,
         tipo: 'operativo',
+        categoria_fiscal: 'operativo',
         notas: ''
       });
     } catch (error) {
@@ -98,6 +100,21 @@ export const GastoForm = ({ isOpen, onClose, onSubmit, initialData, title }: Gas
                 <SelectItem value="operativo">Operativo</SelectItem>
                 <SelectItem value="insumo">Insumo</SelectItem>
                 <SelectItem value="otro">Otro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="categoria_fiscal">Categoría Fiscal</Label>
+            <Select value={formData.categoria_fiscal} onValueChange={(value) => setFormData(prev => ({ ...prev, categoria_fiscal: value }))}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="operativo">Operativo</SelectItem>
+                <SelectItem value="marketing">Marketing</SelectItem>
+                <SelectItem value="administrativo">Administrativo</SelectItem>
+                <SelectItem value="financiero">Financiero</SelectItem>
               </SelectContent>
             </Select>
           </div>

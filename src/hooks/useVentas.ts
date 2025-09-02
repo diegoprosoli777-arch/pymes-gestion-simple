@@ -7,8 +7,12 @@ export interface Venta {
   fecha: string;
   cliente_id?: string;
   monto_total: number;
+  descuento?: number;
+  impuesto?: number;
   metodo_pago: 'efectivo' | 'tarjeta' | 'transferencia';
   estado: 'cobrada' | 'pendiente';
+  fecha_cobro?: string;
+  fecha_vencimiento?: string;
   created_at: string;
   updated_at: string;
 }
@@ -82,35 +86,32 @@ export const useVentas = () => {
       if (ventaError) throw ventaError;
 
       // Create venta items
-      const ventaItems = items.map(item => ({
-        ...item,
-        venta_id: ventaData.id
-      }));
+      if (items.length > 0) {
+        const ventaItems = items.map(item => ({
+          ...item,
+          venta_id: ventaData.id
+        }));
 
-      const { error: itemsError } = await supabase
-        .from('ventas_items')
-        .insert(ventaItems);
-      
-      if (itemsError) throw itemsError;
-
-      // Update product stock
-      for (const item of items) {
-        // Get current stock
-        const { data: productoData } = await supabase
-          .from('productos')
-          .select('stock_actual')
-          .eq('id', item.producto_id)
-          .single();
+        const { error: itemsError } = await supabase
+          .from('ventas_items')
+          .insert(ventaItems);
         
-        if (productoData) {
-          const newStock = productoData.stock_actual - item.cantidad;
-          const { error: stockError } = await supabase
+        if (itemsError) throw itemsError;
+
+        // Update product stock
+        for (const item of items) {
+          const { data: productoData } = await supabase
             .from('productos')
-            .update({ stock_actual: newStock })
-            .eq('id', item.producto_id);
+            .select('stock_actual')
+            .eq('id', item.producto_id)
+            .single();
           
-          if (stockError) {
-            console.warn('Error updating stock:', stockError);
+          if (productoData) {
+            const newStock = productoData.stock_actual - item.cantidad;
+            await supabase
+              .from('productos')
+              .update({ stock_actual: newStock })
+              .eq('id', item.producto_id);
           }
         }
       }

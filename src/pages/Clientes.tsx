@@ -11,7 +11,7 @@ import { exportClientesReport } from "@/lib/excel";
 import toast from "react-hot-toast";
 
 export default function Clientes() {
-  const { clientes, loading, deleteCliente } = useClientes();
+  const { clientes, loading, deleteCliente, createCliente, updateCliente } = useClientes();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<any>(null);
@@ -105,8 +105,14 @@ export default function Clientes() {
                 </DialogTitle>
               </DialogHeader>
               <ClienteForm
+                isOpen={isFormOpen}
                 onClose={handleCloseForm}
+                onSubmit={editingCliente ? 
+                  (data) => updateCliente(editingCliente.id, data) :
+                  createCliente
+                }
                 initialData={editingCliente}
+                title={editingCliente ? 'Editar Cliente' : 'Nuevo Cliente'}
               />
             </DialogContent>
           </Dialog>

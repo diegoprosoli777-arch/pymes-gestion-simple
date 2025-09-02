@@ -11,7 +11,7 @@ import { exportToExcel } from "@/lib/excel";
 import toast from "react-hot-toast";
 
 export default function Gastos() {
-  const { gastos, loading, deleteGasto } = useGastos();
+  const { gastos, loading, deleteGasto, createGasto, updateGasto } = useGastos();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingGasto, setEditingGasto] = useState<any>(null);
@@ -124,8 +124,14 @@ export default function Gastos() {
                 </DialogTitle>
               </DialogHeader>
               <GastoForm
+                isOpen={isFormOpen}
                 onClose={handleCloseForm}
+                onSubmit={editingGasto ? 
+                  (data) => updateGasto(editingGasto.id, data) :
+                  createGasto
+                }
                 initialData={editingGasto}
+                title={editingGasto ? 'Editar Gasto' : 'Nuevo Gasto'}
               />
             </DialogContent>
           </Dialog>
