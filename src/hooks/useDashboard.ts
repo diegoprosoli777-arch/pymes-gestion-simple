@@ -38,32 +38,49 @@ export const useDashboard = () => {
       const previousMonth = currentDate.getFullYear() + '-' + String(currentDate.getMonth()).padStart(2, '0');
 
       // Ventas del mes actual
-      const { data: ventasActuales } = await supabase
+      const { data: ventasActuales, error: ventasError } = await supabase
         .from('ventas')
         .select('monto_total, estado')
         .gte('fecha', currentMonth + '-01')
-        .lt('fecha', currentMonth + '-32');
+        .lte('fecha', currentMonth + '-31');
 
-      // Ventas del mes anterior
-      const { data: ventasAnteriores } = await supabase
+      if (ventasError) {
+        console.error('Error fetching ventas actuales:', ventasError);
+      }
+
+      // Ventas del mes anterior  
+      const { data: ventasAnteriores, error: ventasAnterioresError } = await supabase
         .from('ventas')
         .select('monto_total')
         .gte('fecha', previousMonth + '-01')
-        .lt('fecha', previousMonth + '-32');
+        .lte('fecha', previousMonth + '-31');
+
+      if (ventasAnterioresError) {
+        console.error('Error fetching ventas anteriores:', ventasAnterioresError);
+      }
 
       // Clientes activos
-      const { count: clientesActivos } = await supabase
+      const { count: clientesActivos, error: clientesError } = await supabase
         .from('clientes')
         .select('*', { count: 'exact', head: true })
         .eq('estado', 'activo');
 
+      if (clientesError) {
+        console.error('Error fetching clientes:', clientesError);
+      }
+
       // Productos y stock
-      const { data: productos } = await supabase
+      const { data: productos, error: productosError } = await supabase
         .from('productos')
         .select('stock_actual, stock_minimo, nombre');
 
+      if (productosError) {
+        console.error('Error fetching productos:', productosError);
+      }
+
       // Top productos vendidos (últimos 30 días)
-      const { data: topProductosData } = await supabase
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const { data: topProductosData, error: topProductosError } = await supabase
         .from('ventas_items')
         .select(`
           cantidad,
@@ -71,23 +88,37 @@ export const useDashboard = () => {
           producto:productos(nombre),
           venta:ventas(fecha)
         `)
-        .gte('venta.fecha', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+        .gte('venta.fecha', thirtyDaysAgo);
 
-      // Top clientes por facturación
-      const { data: topClientesData } = await supabase
+      if (topProductosError) {
+        console.error('Error fetching top productos:', topProductosError);
+      }
+
+      // Top clientes por facturación (últimos 90 días)
+      const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const { data: topClientesData, error: topClientesError } = await supabase
         .from('ventas')
         .select(`
           monto_total,
           cliente:clientes(nombre)
         `)
-        .not('cliente_id', 'is', null);
+        .not('cliente_id', 'is', null)
+        .gte('fecha', ninetyDaysAgo);
+
+      if (topClientesError) {
+        console.error('Error fetching top clientes:', topClientesError);
+      }
 
       // Gastos del mes
-      const { data: gastos } = await supabase
+      const { data: gastos, error: gastosError } = await supabase
         .from('gastos')
         .select('monto')
         .gte('fecha', currentMonth + '-01')
-        .lt('fecha', currentMonth + '-32');
+        .lte('fecha', currentMonth + '-31');
+
+      if (gastosError) {
+        console.error('Error fetching gastos:', gastosError);
+      }
 
       // Procesar datos
       const ventasDelMes = ventasActuales?.reduce((sum, v) => sum + Number(v.monto_total), 0) || 0;
