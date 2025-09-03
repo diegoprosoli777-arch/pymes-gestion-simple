@@ -245,19 +245,58 @@ export default function Planificacion() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Comparación Plan vs Real - Ingresos y Gastos</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="h-5 w-5 text-success" />
+              <span>Comparación Plan vs Real - Ingresos y Gastos</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="periodo" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, '']} />
-                <Bar dataKey="planificadoIngresos" fill="#93c5fd" name="Ingresos Plan" />
-                <Bar dataKey="realIngresos" fill="#3b82f6" name="Ingresos Real" />
-                <Bar dataKey="planificadoGastos" fill="#fca5a5" name="Gastos Plan" />
-                <Bar dataKey="realGastos" fill="#ef4444" name="Gastos Real" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.2)" />
+                <XAxis 
+                  dataKey="periodo" 
+                  stroke="hsl(var(--foreground) / 0.7)"
+                  fontSize={12}
+                />
+                <YAxis 
+                  stroke="hsl(var(--foreground) / 0.7)"
+                  fontSize={12}
+                  tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+                />
+                <Tooltip 
+                  formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar 
+                  dataKey="planificadoIngresos" 
+                  fill="#A7F3D0" 
+                  name="Ingresos Planificados"
+                  radius={[2, 2, 0, 0]}
+                />
+                <Bar 
+                  dataKey="realIngresos" 
+                  fill="#10B981" 
+                  name="Ingresos Reales"
+                  radius={[2, 2, 0, 0]}
+                />
+                <Bar 
+                  dataKey="planificadoGastos" 
+                  fill="#FECACA" 
+                  name="Gastos Planificados"
+                  radius={[2, 2, 0, 0]}
+                />
+                <Bar 
+                  dataKey="realGastos" 
+                  fill="#EF4444" 
+                  name="Gastos Reales"
+                  radius={[2, 2, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -265,17 +304,53 @@ export default function Planificacion() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Evolución del Balance</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <span>Evolución del Balance Planificado vs Real</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="periodo" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, '']} />
-                <Line type="monotone" dataKey="planificadoBalance" stroke="#10b981" strokeWidth={2} strokeDasharray="5 5" name="Balance Planificado" />
-                <Line type="monotone" dataKey="realBalance" stroke="#059669" strokeWidth={3} name="Balance Real" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.2)" />
+                <XAxis 
+                  dataKey="periodo" 
+                  stroke="hsl(var(--foreground) / 0.7)"
+                  fontSize={12}
+                />
+                <YAxis 
+                  stroke="hsl(var(--foreground) / 0.7)"
+                  fontSize={12}
+                  tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+                />
+                <Tooltip 
+                  formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="planificadoBalance" 
+                  stroke="#8B5CF6" 
+                  strokeWidth={3}
+                  strokeDasharray="8 4" 
+                  name="Balance Planificado"
+                  dot={{ fill: "#8B5CF6", r: 4 }}
+                  activeDot={{ r: 6, fill: "#8B5CF6" }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="realBalance" 
+                  stroke="#059669" 
+                  strokeWidth={4} 
+                  name="Balance Real"
+                  dot={{ fill: "#059669", r: 5 }}
+                  activeDot={{ r: 7, fill: "#059669" }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

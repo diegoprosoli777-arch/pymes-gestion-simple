@@ -6,12 +6,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useVentas } from "@/hooks/useVentas";
+import { useDashboard } from "@/hooks/useDashboard";
 import { VentaForm } from "@/components/Forms/VentaForm";
 import { exportToExcel } from "@/lib/excel";
 import toast from "react-hot-toast";
 
 export default function Ventas() {
   const { ventas, loading, updateVentaEstado, createVenta } = useVentas();
+  const { refetch: refetchDashboard } = useDashboard();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [viewingVenta, setViewingVenta] = useState<any>(null);
@@ -31,6 +33,8 @@ export default function Ventas() {
 
   const handleStatusChange = async (id: string, estado: 'cobrada' | 'pendiente') => {
     await updateVentaEstado(id, estado);
+    // Refrescar dashboard después de cambiar estado
+    refetchDashboard();
   };
 
   const handleExport = () => {
@@ -110,7 +114,10 @@ export default function Ventas() {
               </DialogHeader>
             <VentaForm 
               isOpen={isFormOpen}
-              onClose={() => setIsFormOpen(false)} 
+              onClose={() => {
+                setIsFormOpen(false);
+                refetchDashboard(); // Refrescar dashboard al crear venta
+              }} 
               onSubmit={createVenta}
               title="Nueva Venta"
             />

@@ -58,8 +58,15 @@ export default function Dashboard() {
           icon={Users}
         />
         <KPICard
-          title="Productos en Stock"
-          value={kpis.productosEnStock.toString()}
+          title="Amplitud de Productos"
+          value={kpis.amplitudProductos.toString()}
+          change="Productos diferentes en catálogo"
+          changeType="neutral"
+          icon={Package}
+        />
+        <KPICard
+          title="Total Stock Inventario"
+          value={kpis.totalStockInventario.toLocaleString()}
           change={`${kpis.productosStockBajo} productos bajo mínimo`}
           changeType={kpis.productosStockBajo > 0 ? "negative" : "positive"}
           icon={Package}

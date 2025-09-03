@@ -169,18 +169,61 @@ export default function Financiamiento() {
         {/* Gráfico de Flujo de Caja Mensual */}
         <Card>
           <CardHeader>
-            <CardTitle>Flujo de Caja Mensual</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <span>Flujo de Caja Mensual</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, '']} />
-                <Line type="monotone" dataKey="ingresos" stroke="#10b981" strokeWidth={2} name="Ingresos" />
-                <Line type="monotone" dataKey="egresos" stroke="#ef4444" strokeWidth={2} name="Egresos" />
-                <Line type="monotone" dataKey="balance" stroke="#3b82f6" strokeWidth={2} name="Balance" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.2)" />
+                <XAxis 
+                  dataKey="mes" 
+                  stroke="hsl(var(--foreground) / 0.7)"
+                  fontSize={12}
+                />
+                <YAxis 
+                  stroke="hsl(var(--foreground) / 0.7)"
+                  fontSize={12}
+                  tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+                />
+                <Tooltip 
+                  formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="ingresos" 
+                  stroke="#10B981" 
+                  strokeWidth={3} 
+                  name="Ingresos"
+                  dot={{ fill: "#10B981", r: 4 }}
+                  activeDot={{ r: 6, fill: "#10B981" }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="egresos" 
+                  stroke="#EF4444" 
+                  strokeWidth={3} 
+                  name="Egresos"
+                  dot={{ fill: "#EF4444", r: 4 }}
+                  activeDot={{ r: 6, fill: "#EF4444" }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="balance" 
+                  stroke="#3B82F6" 
+                  strokeWidth={4} 
+                  name="Balance"
+                  dot={{ fill: "#3B82F6", r: 5 }}
+                  activeDot={{ r: 7, fill: "#3B82F6" }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -189,16 +232,40 @@ export default function Financiamiento() {
         {/* Gráfico de Balance Acumulado */}
         <Card>
           <CardHeader>
-            <CardTitle>Balance Acumulado</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              <span>Balance Acumulado Mensual</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Acumulado']} />
-                <Bar dataKey="acumulado" fill="#8b5cf6" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.2)" />
+                <XAxis 
+                  dataKey="mes" 
+                  stroke="hsl(var(--foreground) / 0.7)"
+                  fontSize={12}
+                />
+                <YAxis 
+                  stroke="hsl(var(--foreground) / 0.7)"
+                  fontSize={12}
+                  tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+                />
+                <Tooltip 
+                  formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar 
+                  dataKey="acumulado" 
+                  fill="#8B5CF6" 
+                  name="Balance Acumulado"
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

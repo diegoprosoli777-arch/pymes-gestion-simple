@@ -6,12 +6,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useGastos } from "@/hooks/useGastos";
+import { useDashboard } from "@/hooks/useDashboard";
 import { GastoForm } from "@/components/Forms/GastoForm";
 import { exportToExcel } from "@/lib/excel";
 import toast from "react-hot-toast";
 
 export default function Gastos() {
   const { gastos, loading, deleteGasto, createGasto, updateGasto } = useGastos();
+  const { refetch: refetchDashboard } = useDashboard();
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingGasto, setEditingGasto] = useState<any>(null);
@@ -34,6 +36,8 @@ export default function Gastos() {
   const handleDelete = async (id: string) => {
     if (window.confirm('¿Está seguro de eliminar este gasto?')) {
       await deleteGasto(id);
+      // Refrescar dashboard después de eliminar gasto
+      refetchDashboard();
     }
   };
 
@@ -125,7 +129,10 @@ export default function Gastos() {
               </DialogHeader>
               <GastoForm
                 isOpen={isFormOpen}
-                onClose={handleCloseForm}
+                onClose={() => {
+                  handleCloseForm();
+                  refetchDashboard(); // Refrescar dashboard al crear/editar gasto
+                }}
                 onSubmit={editingGasto ? 
                   (data) => updateGasto(editingGasto.id, data) :
                   createGasto

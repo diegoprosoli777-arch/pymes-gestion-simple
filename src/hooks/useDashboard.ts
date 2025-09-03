@@ -8,6 +8,8 @@ export interface DashboardKPIs {
   clientesActivos: number;
   productosEnStock: number;
   productosStockBajo: number;
+  amplitudProductos: number;
+  totalStockInventario: number;
   facturasCobradasPorcentaje: number;
   balanceDelMes: number;
   topProductos: Array<{
@@ -36,13 +38,17 @@ export const useDashboard = () => {
       const currentDate = new Date();
       const currentMonth = currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0');
       const previousMonth = currentDate.getFullYear() + '-' + String(currentDate.getMonth()).padStart(2, '0');
+      
+      // Calcular último día del mes actual correctamente
+      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+      const lastDayOfPrevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
 
       // Ventas del mes actual
       const { data: ventasActuales, error: ventasError } = await supabase
         .from('ventas')
         .select('monto_total, estado')
         .gte('fecha', currentMonth + '-01')
-        .lte('fecha', currentMonth + '-31');
+        .lte('fecha', currentMonth + '-' + String(lastDayOfMonth).padStart(2, '0'));
 
       if (ventasError) {
         console.error('Error fetching ventas actuales:', ventasError);
@@ -53,7 +59,7 @@ export const useDashboard = () => {
         .from('ventas')
         .select('monto_total')
         .gte('fecha', previousMonth + '-01')
-        .lte('fecha', previousMonth + '-31');
+        .lte('fecha', previousMonth + '-' + String(lastDayOfPrevMonth).padStart(2, '0'));
 
       if (ventasAnterioresError) {
         console.error('Error fetching ventas anteriores:', ventasAnterioresError);
@@ -114,7 +120,7 @@ export const useDashboard = () => {
         .from('gastos')
         .select('monto')
         .gte('fecha', currentMonth + '-01')
-        .lte('fecha', currentMonth + '-31');
+        .lte('fecha', currentMonth + '-' + String(lastDayOfMonth).padStart(2, '0'));
 
       if (gastosError) {
         console.error('Error fetching gastos:', gastosError);
@@ -129,6 +135,10 @@ export const useDashboard = () => {
 
       const productosStockBajo = productos?.filter(p => p.stock_actual <= p.stock_minimo).length || 0;
       const stockCritico = productos?.filter(p => p.stock_actual <= p.stock_minimo).slice(0, 5) || [];
+      
+      // Nuevos KPIs solicitados
+      const amplitudProductos = productos?.length || 0;
+      const totalStockInventario = productos?.reduce((sum, p) => sum + p.stock_actual, 0) || 0;
 
       const facturasCobradasPorcentaje = ventasActuales?.length 
         ? (ventasActuales.filter(v => v.estado === 'cobrada').length / ventasActuales.length) * 100 
@@ -175,6 +185,8 @@ export const useDashboard = () => {
         clientesActivos: clientesActivos || 0,
         productosEnStock: productos?.length || 0,
         productosStockBajo,
+        amplitudProductos,
+        totalStockInventario,
         facturasCobradasPorcentaje,
         balanceDelMes,
         topProductos: topProductos as any,

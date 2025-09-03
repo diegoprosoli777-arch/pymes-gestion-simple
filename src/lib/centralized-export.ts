@@ -15,29 +15,61 @@ export interface ExportData {
 
 export const exportCentralizedReport = (data: ExportData) => {
   const workbook = XLSX.utils.book_new();
+  
+  // Configuración de colores para títulos (azul claro)
+  const headerStyle = {
+    font: { bold: true, color: { rgb: "FFFFFF" } },
+    fill: { fgColor: { rgb: "4A90E2" } }, // Azul claro
+    alignment: { horizontal: "center" },
+    border: {
+      top: { style: "thin" },
+      bottom: { style: "thin" },
+      left: { style: "thin" },
+      right: { style: "thin" }
+    }
+  };
 
-  // Hoja de Resumen
+  // Aplicar estilos a todas las hojas
+  const applyHeaderStyles = (sheet: any, headerRow = 1) => {
+    const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1:Z1');
+    for (let col = range.s.c; col <= range.e.c; col++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: headerRow - 1, c: col });
+      if (sheet[cellAddress]) {
+        sheet[cellAddress].s = headerStyle;
+      }
+    }
+  };
+
+  // Hoja de Resumen con estilo mejorado
   const resumenData = [
-    ['RESUMEN EJECUTIVO DEL NEGOCIO'],
+    ['🏢 RESUMEN EJECUTIVO DEL NEGOCIO'],
     [''],
+    ['📊 MÉTRICAS GENERALES'],
     ['Total Clientes', data.clientes.length],
     ['Total Productos', data.productos.length],
-    ['Total Ventas', data.ventas.length],
-    ['Total Gastos', data.gastos.length],
+    ['Total Ventas Realizadas', data.ventas.length],
+    ['Total Gastos Registrados', data.gastos.length],
     [''],
-    ['Ventas Totales', `$${data.ventas.reduce((sum, v) => sum + v.monto_total, 0).toLocaleString()}`],
-    ['Gastos Totales', `$${data.gastos.reduce((sum, g) => sum + g.monto, 0).toLocaleString()}`],
-    ['Ganancia Bruta', `$${(data.ventas.reduce((sum, v) => sum + v.monto_total, 0) - data.gastos.reduce((sum, g) => sum + g.monto, 0)).toLocaleString()}`],
+    ['💰 ANÁLISIS FINANCIERO'],
+    ['Ingresos Totales', `$${data.ventas.reduce((sum, v) => sum + v.monto_total, 0).toLocaleString()}`],
+    ['Egresos Totales', `$${data.gastos.reduce((sum, g) => sum + g.monto, 0).toLocaleString()}`],
+    ['Ganancia Neta', `$${(data.ventas.reduce((sum, v) => sum + v.monto_total, 0) - data.gastos.reduce((sum, g) => sum + g.monto, 0)).toLocaleString()}`],
     [''],
-    ['Reporte generado el', new Date().toLocaleDateString('es-ES')],
+    ['📅 INFORMACIÓN DEL REPORTE'],
+    ['Generado el', new Date().toLocaleDateString('es-ES')],
+    ['Hora de generación', new Date().toLocaleTimeString('es-ES')],
   ];
   const resumenSheet = XLSX.utils.aoa_to_sheet(resumenData);
   
-  // Estilo para el resumen
-  resumenSheet['!cols'] = [{ width: 25 }, { width: 20 }];
-  XLSX.utils.book_append_sheet(workbook, resumenSheet, 'Resumen');
+  // Estilo para el resumen con colores
+  resumenSheet['!cols'] = [{ width: 30 }, { width: 25 }];
+  applyHeaderStyles(resumenSheet, 1);
+  applyHeaderStyles(resumenSheet, 3);
+  applyHeaderStyles(resumenSheet, 9);
+  applyHeaderStyles(resumenSheet, 14);
+  XLSX.utils.book_append_sheet(workbook, resumenSheet, '📊 Resumen');
 
-  // Hoja de Clientes
+  // Hoja de Clientes con mejor formato
   const clientesData = data.clientes.map(cliente => ({
     ID: cliente.id,
     Nombre: cliente.nombre,
@@ -60,7 +92,8 @@ export const exportCentralizedReport = (data: ExportData) => {
     { width: 20 }, { width: 12 }, { width: 15 }, { width: 12 },
     { width: 15 }, { width: 30 }
   ];
-  XLSX.utils.book_append_sheet(workbook, clientesSheet, 'Clientes');
+  applyHeaderStyles(clientesSheet);
+  XLSX.utils.book_append_sheet(workbook, clientesSheet, '👥 Clientes');
 
   // Hoja de Productos/Inventario
   const productosData = data.productos.map(producto => ({
@@ -83,7 +116,8 @@ export const exportCentralizedReport = (data: ExportData) => {
     { width: 12 }, { width: 10 }, { width: 12 }, { width: 12 },
     { width: 12 }, { width: 15 }, { width: 15 }
   ];
-  XLSX.utils.book_append_sheet(workbook, productosSheet, 'Inventario');
+  applyHeaderStyles(productosSheet);
+  XLSX.utils.book_append_sheet(workbook, productosSheet, '📦 Inventario');
 
   // Hoja de Ventas
   const ventasData = data.ventas.map(venta => {
@@ -108,7 +142,8 @@ export const exportCentralizedReport = (data: ExportData) => {
     { width: 15 }, { width: 12 }, { width: 12 }, { width: 12 },
     { width: 15 }, { width: 15 }
   ];
-  XLSX.utils.book_append_sheet(workbook, ventasSheet, 'Ventas');
+  applyHeaderStyles(ventasSheet);
+  XLSX.utils.book_append_sheet(workbook, ventasSheet, '💳 Ventas');
 
   // Hoja de Gastos
   const gastosData = data.gastos.map(gasto => ({
@@ -127,7 +162,8 @@ export const exportCentralizedReport = (data: ExportData) => {
     { width: 15 }, { width: 12 }, { width: 20 }, { width: 15 },
     { width: 15 }, { width: 18 }, { width: 12 }, { width: 30 }
   ];
-  XLSX.utils.book_append_sheet(workbook, gastosSheet, 'Gastos');
+  applyHeaderStyles(gastosSheet);
+  XLSX.utils.book_append_sheet(workbook, gastosSheet, '💸 Gastos');
 
   // Hoja de Análisis Financiero
   const meses = Array.from(new Set([
@@ -166,7 +202,8 @@ export const exportCentralizedReport = (data: ExportData) => {
     { width: 12 }, { width: 15 }, { width: 15 }, { width: 15 },
     { width: 12 }, { width: 10 }, { width: 10 }, { width: 15 }
   ];
-  XLSX.utils.book_append_sheet(workbook, analisisSheet, 'Análisis Financiero');
+  applyHeaderStyles(analisisSheet);
+  XLSX.utils.book_append_sheet(workbook, analisisSheet, '📈 Análisis Financiero');
 
   // Top Clientes
   const topClientes = data.clientes
@@ -196,7 +233,8 @@ export const exportCentralizedReport = (data: ExportData) => {
     { width: 10 }, { width: 25 }, { width: 15 }, { width: 10 },
     { width: 18 }, { width: 12 }, { width: 25 }, { width: 15 }
   ];
-  XLSX.utils.book_append_sheet(workbook, topClientesSheet, 'Top Clientes');
+  applyHeaderStyles(topClientesSheet);
+  XLSX.utils.book_append_sheet(workbook, topClientesSheet, '🏆 Top Clientes');
 
   // Top Productos
   const topProductos = data.productos
@@ -238,9 +276,10 @@ export const exportCentralizedReport = (data: ExportData) => {
     { width: 10 }, { width: 25 }, { width: 15 }, { width: 15 },
     { width: 15 }, { width: 15 }, { width: 12 }, { width: 15 }
   ];
-  XLSX.utils.book_append_sheet(workbook, topProductosSheet, 'Top Productos');
+  applyHeaderStyles(topProductosSheet);
+  XLSX.utils.book_append_sheet(workbook, topProductosSheet, '🥇 Top Productos');
 
-  // Guardar archivo
+  // Guardar archivo con nombre mejorado
   const fileName = `Reporte_Completo_${new Date().toISOString().split('T')[0]}.xlsx`;
   XLSX.writeFile(workbook, fileName);
 };
