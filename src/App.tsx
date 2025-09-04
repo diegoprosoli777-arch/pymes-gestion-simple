@@ -15,6 +15,7 @@ import Financiamiento from "./pages/Financiamiento";
 import Tributaria from "./pages/Tributaria";
 import Planificacion from "./pages/Planificacion";
 import Reportes from "./pages/Reportes";
+import Proveedores from "./pages/Proveedores";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="crm" element={<CRM />} />
             <Route path="ventas" element={<Ventas />} />
             <Route path="gastos" element={<Gastos />} />
+            <Route path="proveedores" element={<Proveedores />} />
             <Route path="financiamiento" element={<Financiamiento />} />
             <Route path="tributaria" element={<Tributaria />} />
             <Route path="planificacion" element={<Planificacion />} />

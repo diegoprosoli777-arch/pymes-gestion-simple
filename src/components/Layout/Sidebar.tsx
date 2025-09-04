@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Package, Users, ShoppingCart, Receipt, FileText, Building2, TrendingUp, Calculator, UserCheck, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Package, Users, ShoppingCart, Receipt, FileText, Building2, TrendingUp, Calculator, UserCheck, BarChart3, Truck } from "lucide-react";
 const navigation = [{
   name: 'Dashboard',
   href: '/',
@@ -24,6 +24,10 @@ const navigation = [{
   name: 'Gastos',
   href: '/gastos',
   icon: Receipt
+}, {
+  name: 'Proveedores',
+  href: '/proveedores',
+  icon: Truck
 }, {
   name: 'Financiamiento',
   href: '/financiamiento',

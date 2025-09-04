@@ -236,13 +236,14 @@ export default function Ventas() {
                 </div>
                 
                 <div className="text-center lg:text-left">
-                  <Badge 
-                    className={getStatusColor(venta.estado)}
+                  <Button
+                    variant={venta.estado === 'cobrada' ? 'default' : 'outline'}
+                    size="sm"
                     onClick={() => handleStatusChange(venta.id, venta.estado === 'cobrada' ? 'pendiente' : 'cobrada')}
-                    style={{ cursor: 'pointer' }}
+                    className={venta.estado === 'cobrada' ? 'bg-success text-success-foreground' : 'border-warning text-warning'}
                   >
-                    {venta.estado === 'cobrada' ? 'Cobrada' : 'Pendiente'}
-                  </Badge>
+                    {venta.estado === 'cobrada' ? '✓ Cobrada' : '⏱ Marcar como Cobrada'}
+                  </Button>
                 </div>
                 
                 <div className="text-center flex space-x-2">
