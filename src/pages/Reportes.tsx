@@ -6,6 +6,7 @@ import { useClientes } from "@/hooks/useClientes";
 import { useVentas } from "@/hooks/useVentas";
 import { useProductos } from "@/hooks/useProductos";
 import { useGastos } from "@/hooks/useGastos";
+import { useProveedores } from "@/hooks/useProveedores";
 import { 
   exportVentasReport, 
   exportClientesReport, 
@@ -22,6 +23,7 @@ export default function Reportes() {
   const { ventas, loading: loadingVentas } = useVentas();
   const { productos, loading: loadingProductos } = useProductos();
   const { gastos, loading: loadingGastos } = useGastos();
+  const { proveedores, compras, pagos } = useProveedores();
   const { flujoCaja, kpisFinancieros } = useFinanciamiento();
   const [dateRange, setDateRange] = useState({
     start: new Date().toISOString().split('T')[0].replace(/-\d{2}$/, '-01'),
@@ -189,7 +191,7 @@ export default function Reportes() {
                   Resumen, Clientes, Inventario, Ventas, Gastos, Análisis Financiero y Top Rankings.
                 </p>
                 <div className="mt-3 text-sm text-muted-foreground">
-                  ✅ {clientes.length} clientes • ✅ {productos.length} productos • ✅ {ventas.length} ventas • ✅ {gastos.length} gastos
+                  ✅ {clientes.length} clientes • ✅ {productos.length} productos • ✅ {ventas.length} ventas • ✅ {gastos.length} gastos • ✅ {proveedores.length} proveedores
                 </div>
               </div>
               <Button 
@@ -201,6 +203,9 @@ export default function Reportes() {
                     ventas,
                     productos,
                     gastos,
+                    proveedores,
+                    compras,
+                    pagos,
                     flujoCaja,
                     kpisFinancieros
                   });

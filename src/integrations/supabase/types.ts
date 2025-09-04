@@ -50,6 +50,62 @@ export type Database = {
         }
         Relationships: []
       }
+      compras_proveedores: {
+        Row: {
+          concepto: string
+          created_at: string
+          estado: string
+          fecha: string
+          fecha_pago: string | null
+          fecha_vencimiento: string | null
+          id: string
+          metodo_pago: string | null
+          monto_total: number
+          notas: string | null
+          numero_factura: string | null
+          proveedor_id: string
+          updated_at: string
+        }
+        Insert: {
+          concepto: string
+          created_at?: string
+          estado?: string
+          fecha?: string
+          fecha_pago?: string | null
+          fecha_vencimiento?: string | null
+          id?: string
+          metodo_pago?: string | null
+          monto_total?: number
+          notas?: string | null
+          numero_factura?: string | null
+          proveedor_id: string
+          updated_at?: string
+        }
+        Update: {
+          concepto?: string
+          created_at?: string
+          estado?: string
+          fecha?: string
+          fecha_pago?: string | null
+          fecha_vencimiento?: string | null
+          id?: string
+          metodo_pago?: string | null
+          monto_total?: number
+          notas?: string | null
+          numero_factura?: string | null
+          proveedor_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compras_proveedores_proveedor_id_fkey"
+            columns: ["proveedor_id"]
+            isOneToOne: false
+            referencedRelation: "proveedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gastos: {
         Row: {
           categoria_fiscal: string | null
@@ -120,6 +176,63 @@ export type Database = {
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pagos_proveedores: {
+        Row: {
+          compra_id: string | null
+          concepto: string | null
+          created_at: string
+          fecha: string
+          id: string
+          metodo_pago: string
+          monto: number
+          notas: string | null
+          numero_referencia: string | null
+          proveedor_id: string
+          updated_at: string
+        }
+        Insert: {
+          compra_id?: string | null
+          concepto?: string | null
+          created_at?: string
+          fecha?: string
+          id?: string
+          metodo_pago?: string
+          monto?: number
+          notas?: string | null
+          numero_referencia?: string | null
+          proveedor_id: string
+          updated_at?: string
+        }
+        Update: {
+          compra_id?: string | null
+          concepto?: string | null
+          created_at?: string
+          fecha?: string
+          id?: string
+          metodo_pago?: string
+          monto?: number
+          notas?: string | null
+          numero_referencia?: string | null
+          proveedor_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagos_proveedores_compra_id_fkey"
+            columns: ["compra_id"]
+            isOneToOne: false
+            referencedRelation: "compras_proveedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagos_proveedores_proveedor_id_fkey"
+            columns: ["proveedor_id"]
+            isOneToOne: false
+            referencedRelation: "proveedores"
             referencedColumns: ["id"]
           },
         ]
@@ -242,30 +355,45 @@ export type Database = {
       }
       proveedores: {
         Row: {
+          activo: boolean | null
           created_at: string
+          direccion: string | null
           email: string | null
           empresa: string | null
+          especialidad: string | null
           id: string
           nombre: string
+          notas: string | null
           telefono: string | null
+          tipo_proveedor: string | null
           updated_at: string
         }
         Insert: {
+          activo?: boolean | null
           created_at?: string
+          direccion?: string | null
           email?: string | null
           empresa?: string | null
+          especialidad?: string | null
           id?: string
           nombre: string
+          notas?: string | null
           telefono?: string | null
+          tipo_proveedor?: string | null
           updated_at?: string
         }
         Update: {
+          activo?: boolean | null
           created_at?: string
+          direccion?: string | null
           email?: string | null
           empresa?: string | null
+          especialidad?: string | null
           id?: string
           nombre?: string
+          notas?: string | null
           telefono?: string | null
+          tipo_proveedor?: string | null
           updated_at?: string
         }
         Relationships: []

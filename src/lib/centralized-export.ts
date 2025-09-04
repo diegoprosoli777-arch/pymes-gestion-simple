@@ -3,12 +3,16 @@ import { Cliente } from '@/hooks/useClientes';
 import { Venta } from '@/hooks/useVentas';
 import { Producto } from '@/hooks/useProductos';
 import { Gasto } from '@/hooks/useGastos';
+import { Proveedor, CompraProveedor, PagoProveedor } from '@/hooks/useProveedores';
 
 export interface ExportData {
   clientes: Cliente[];
   ventas: Venta[];
   productos: Producto[];
   gastos: Gasto[];
+  proveedores: Proveedor[];
+  compras: CompraProveedor[];
+  pagos: PagoProveedor[];
   flujoCaja?: any[];
   kpisFinancieros?: any;
 }
@@ -49,10 +53,15 @@ export const exportCentralizedReport = (data: ExportData) => {
     ['Total Productos', data.productos.length],
     ['Total Ventas Realizadas', data.ventas.length],
     ['Total Gastos Registrados', data.gastos.length],
+    ['Total Proveedores', data.proveedores.length],
+    ['Total Compras a Proveedores', data.compras.length],
+    ['Total Pagos a Proveedores', data.pagos.length],
     [''],
     ['💰 ANÁLISIS FINANCIERO'],
     ['Ingresos Totales', `$${data.ventas.reduce((sum, v) => sum + v.monto_total, 0).toLocaleString()}`],
     ['Egresos Totales', `$${data.gastos.reduce((sum, g) => sum + g.monto, 0).toLocaleString()}`],
+    ['Gastos en Proveedores', `$${data.compras.reduce((sum, c) => sum + c.monto_total, 0).toLocaleString()}`],
+    ['Pagos a Proveedores', `$${data.pagos.reduce((sum, p) => sum + p.monto, 0).toLocaleString()}`],
     ['Ganancia Neta', `$${(data.ventas.reduce((sum, v) => sum + v.monto_total, 0) - data.gastos.reduce((sum, g) => sum + g.monto, 0)).toLocaleString()}`],
     [''],
     ['📅 INFORMACIÓN DEL REPORTE'],
@@ -65,8 +74,8 @@ export const exportCentralizedReport = (data: ExportData) => {
   resumenSheet['!cols'] = [{ width: 30 }, { width: 25 }];
   applyHeaderStyles(resumenSheet, 1);
   applyHeaderStyles(resumenSheet, 3);
-  applyHeaderStyles(resumenSheet, 9);
-  applyHeaderStyles(resumenSheet, 14);
+  applyHeaderStyles(resumenSheet, 12);
+  applyHeaderStyles(resumenSheet, 19);
   XLSX.utils.book_append_sheet(workbook, resumenSheet, '📊 Resumen');
 
   // Hoja de Clientes con mejor formato
@@ -278,6 +287,92 @@ export const exportCentralizedReport = (data: ExportData) => {
   ];
   applyHeaderStyles(topProductosSheet);
   XLSX.utils.book_append_sheet(workbook, topProductosSheet, '🥇 Top Productos');
+
+  // Hoja de Proveedores
+  const proveedoresData = data.proveedores.map(proveedor => {
+    const comprasProveedor = data.compras.filter(c => c.proveedor_id === proveedor.id);
+    const pagosProveedor = data.pagos.filter(p => p.proveedor_id === proveedor.id);
+    const totalCompras = comprasProveedor.reduce((sum, c) => sum + c.monto_total, 0);
+    const totalPagos = pagosProveedor.reduce((sum, p) => sum + p.monto, 0);
+    
+    return {
+      ID: proveedor.id,
+      Nombre: proveedor.nombre,
+      Empresa: proveedor.empresa || '',
+      Email: proveedor.email || '',
+      Teléfono: proveedor.telefono || '',
+      Especialidad: proveedor.especialidad || '',
+      'Tipo Proveedor': proveedor.tipo_proveedor || '',
+      Dirección: proveedor.direccion || '',
+      Activo: proveedor.activo ? 'Sí' : 'No',
+      'Total Compras': `$${totalCompras.toLocaleString()}`,
+      'Total Pagos': `$${totalPagos.toLocaleString()}`,
+      'Saldo Pendiente': `$${(totalCompras - totalPagos).toLocaleString()}`,
+      'N° Compras': comprasProveedor.length,
+      'Fecha Registro': new Date(proveedor.created_at).toLocaleDateString('es-ES'),
+      Notas: proveedor.notas || ''
+    };
+  });
+  
+  const proveedoresSheet = XLSX.utils.json_to_sheet(proveedoresData);
+  proveedoresSheet['!cols'] = [
+    { width: 15 }, { width: 20 }, { width: 20 }, { width: 25 },
+    { width: 15 }, { width: 20 }, { width: 15 }, { width: 25 },
+    { width: 8 }, { width: 15 }, { width: 15 }, { width: 15 },
+    { width: 10 }, { width: 15 }, { width: 30 }
+  ];
+  applyHeaderStyles(proveedoresSheet);
+  XLSX.utils.book_append_sheet(workbook, proveedoresSheet, '🏢 Proveedores');
+
+  // Hoja de Compras
+  const comprasData = data.compras.map(compra => {
+    const proveedor = data.proveedores.find(p => p.id === compra.proveedor_id);
+    return {
+      ID: compra.id,
+      'Proveedor': proveedor?.nombre || 'Sin proveedor',
+      Fecha: new Date(compra.fecha).toLocaleDateString('es-ES'),
+      Concepto: compra.concepto,
+      'Monto Total': `$${compra.monto_total.toLocaleString()}`,
+      Estado: compra.estado,
+      'N° Factura': compra.numero_factura || '',
+      'Fecha Vencimiento': compra.fecha_vencimiento ? new Date(compra.fecha_vencimiento).toLocaleDateString('es-ES') : '',
+      'Fecha Pago': compra.fecha_pago ? new Date(compra.fecha_pago).toLocaleDateString('es-ES') : '',
+      'Método Pago': compra.metodo_pago || '',
+      Notas: compra.notas || ''
+    };
+  });
+  
+  const comprasSheet = XLSX.utils.json_to_sheet(comprasData);
+  comprasSheet['!cols'] = [
+    { width: 15 }, { width: 20 }, { width: 12 }, { width: 25 },
+    { width: 15 }, { width: 12 }, { width: 15 }, { width: 15 },
+    { width: 15 }, { width: 15 }, { width: 30 }
+  ];
+  applyHeaderStyles(comprasSheet);
+  XLSX.utils.book_append_sheet(workbook, comprasSheet, '🛒 Compras');
+
+  // Hoja de Pagos
+  const pagosData = data.pagos.map(pago => {
+    const proveedor = data.proveedores.find(p => p.id === pago.proveedor_id);
+    return {
+      ID: pago.id,
+      'Proveedor': proveedor?.nombre || 'Sin proveedor',
+      Fecha: new Date(pago.fecha).toLocaleDateString('es-ES'),
+      Monto: `$${pago.monto.toLocaleString()}`,
+      'Método Pago': pago.metodo_pago,
+      Concepto: pago.concepto || '',
+      'N° Referencia': pago.numero_referencia || '',
+      Notas: pago.notas || ''
+    };
+  });
+  
+  const pagosSheet = XLSX.utils.json_to_sheet(pagosData);
+  pagosSheet['!cols'] = [
+    { width: 15 }, { width: 20 }, { width: 12 }, { width: 15 },
+    { width: 15 }, { width: 20 }, { width: 15 }, { width: 30 }
+  ];
+  applyHeaderStyles(pagosSheet);
+  XLSX.utils.book_append_sheet(workbook, pagosSheet, '💳 Pagos Proveedores');
 
   // Guardar archivo con nombre mejorado
   const fileName = `Reporte_Completo_${new Date().toISOString().split('T')[0]}.xlsx`;

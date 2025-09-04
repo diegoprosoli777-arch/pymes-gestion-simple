@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Proveedor } from '@/hooks/useProveedores';
 
@@ -18,7 +20,11 @@ export function ProveedorForm({ isOpen, onClose, onSubmit, title, initialData }:
     nombre: initialData?.nombre || '',
     telefono: initialData?.telefono || '',
     email: initialData?.email || '',
-    empresa: initialData?.empresa || ''
+    empresa: initialData?.empresa || '',
+    especialidad: initialData?.especialidad || '',
+    tipo_proveedor: initialData?.tipo_proveedor || 'productos',
+    direccion: initialData?.direccion || '',
+    notas: initialData?.notas || ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,14 +38,22 @@ export function ProveedorForm({ isOpen, onClose, onSubmit, title, initialData }:
         nombre: formData.nombre.trim(),
         telefono: formData.telefono.trim() || undefined,
         email: formData.email.trim() || undefined,
-        empresa: formData.empresa.trim() || undefined
+        empresa: formData.empresa.trim() || undefined,
+        especialidad: formData.especialidad.trim() || undefined,
+        tipo_proveedor: formData.tipo_proveedor,
+        direccion: formData.direccion.trim() || undefined,
+        notas: formData.notas.trim() || undefined
       });
       
       setFormData({
         nombre: '',
         telefono: '',
         email: '',
-        empresa: ''
+        empresa: '',
+        especialidad: '',
+        tipo_proveedor: 'productos',
+        direccion: '',
+        notas: ''
       });
       onClose();
     } catch (error) {
@@ -97,6 +111,55 @@ export function ProveedorForm({ isOpen, onClose, onSubmit, title, initialData }:
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
               placeholder="Email"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="especialidad">Especialidad / Qué Provee</Label>
+            <Input
+              id="especialidad"
+              type="text"
+              value={formData.especialidad}
+              onChange={(e) => setFormData(prev => ({ ...prev, especialidad: e.target.value }))}
+              placeholder="Ej: Materiales de construcción, Equipos de oficina"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="tipo_proveedor">Tipo de Proveedor</Label>
+            <Select value={formData.tipo_proveedor} onValueChange={(value) => setFormData(prev => ({ ...prev, tipo_proveedor: value }))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="productos">Productos</SelectItem>
+                <SelectItem value="servicios">Servicios</SelectItem>
+                <SelectItem value="materiales">Materiales</SelectItem>
+                <SelectItem value="equipos">Equipos</SelectItem>
+                <SelectItem value="otro">Otro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="direccion">Dirección</Label>
+            <Input
+              id="direccion"
+              type="text"
+              value={formData.direccion}
+              onChange={(e) => setFormData(prev => ({ ...prev, direccion: e.target.value }))}
+              placeholder="Dirección completa"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="notas">Notas</Label>
+            <Textarea
+              id="notas"
+              value={formData.notas}
+              onChange={(e) => setFormData(prev => ({ ...prev, notas: e.target.value }))}
+              placeholder="Notas adicionales sobre el proveedor"
+              rows={3}
             />
           </div>
 
