@@ -18,13 +18,21 @@ interface ProveedorFormProps {
 export function ProveedorForm({ isOpen, onClose, onSubmit, title, initialData }: ProveedorFormProps) {
   const [formData, setFormData] = useState({
     nombre: initialData?.nombre || '',
+    cuit_dni: initialData?.cuit_dni || '',
     telefono: initialData?.telefono || '',
     email: initialData?.email || '',
     empresa: initialData?.empresa || '',
     especialidad: initialData?.especialidad || '',
     tipo_proveedor: initialData?.tipo_proveedor || 'productos',
+    rubro: initialData?.rubro || '',
+    calle: initialData?.calle || '',
+    numero: initialData?.numero || '',
+    ciudad: initialData?.ciudad || '',
+    provincia: initialData?.provincia || '',
+    codigo_postal: initialData?.codigo_postal || '',
     direccion: initialData?.direccion || '',
-    notas: initialData?.notas || ''
+    notas: initialData?.notas || '',
+    notas_internas: initialData?.notas_internas || ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,24 +44,40 @@ export function ProveedorForm({ isOpen, onClose, onSubmit, title, initialData }:
     try {
       await onSubmit({
         nombre: formData.nombre.trim(),
+        cuit_dni: formData.cuit_dni.trim() || undefined,
         telefono: formData.telefono.trim() || undefined,
         email: formData.email.trim() || undefined,
         empresa: formData.empresa.trim() || undefined,
         especialidad: formData.especialidad.trim() || undefined,
         tipo_proveedor: formData.tipo_proveedor,
+        rubro: formData.rubro.trim() || undefined,
+        calle: formData.calle.trim() || undefined,
+        numero: formData.numero.trim() || undefined,
+        ciudad: formData.ciudad.trim() || undefined,
+        provincia: formData.provincia.trim() || undefined,
+        codigo_postal: formData.codigo_postal.trim() || undefined,
         direccion: formData.direccion.trim() || undefined,
-        notas: formData.notas.trim() || undefined
+        notas: formData.notas.trim() || undefined,
+        notas_internas: formData.notas_internas.trim() || undefined
       });
       
       setFormData({
         nombre: '',
+        cuit_dni: '',
         telefono: '',
         email: '',
         empresa: '',
         especialidad: '',
         tipo_proveedor: 'productos',
+        rubro: '',
+        calle: '',
+        numero: '',
+        ciudad: '',
+        provincia: '',
+        codigo_postal: '',
         direccion: '',
-        notas: ''
+        notas: '',
+        notas_internas: ''
       });
       onClose();
     } catch (error) {
@@ -82,7 +106,18 @@ export function ProveedorForm({ isOpen, onClose, onSubmit, title, initialData }:
           </div>
 
           <div>
-            <Label htmlFor="empresa">Empresa</Label>
+            <Label htmlFor="cuit_dni">CUIT / DNI</Label>
+            <Input
+              id="cuit_dni"
+              type="text"
+              value={formData.cuit_dni}
+              onChange={(e) => setFormData(prev => ({ ...prev, cuit_dni: e.target.value }))}
+              placeholder="20-12345678-9 o 12345678"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="empresa">Empresa / Razón Social</Label>
             <Input
               id="empresa"
               type="text"
@@ -126,6 +161,27 @@ export function ProveedorForm({ isOpen, onClose, onSubmit, title, initialData }:
           </div>
 
           <div>
+            <Label htmlFor="rubro">Rubro / Categoría</Label>
+            <Select value={formData.rubro} onValueChange={(value) => setFormData(prev => ({ ...prev, rubro: value }))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar rubro" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="insumos">Insumos</SelectItem>
+                <SelectItem value="logistica">Logística</SelectItem>
+                <SelectItem value="servicios">Servicios</SelectItem>
+                <SelectItem value="tecnologia">Tecnología</SelectItem>
+                <SelectItem value="construccion">Construcción</SelectItem>
+                <SelectItem value="alimentacion">Alimentación</SelectItem>
+                <SelectItem value="textil">Textil</SelectItem>
+                <SelectItem value="mantenimiento">Mantenimiento</SelectItem>
+                <SelectItem value="consultoria">Consultoría</SelectItem>
+                <SelectItem value="otro">Otro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
             <Label htmlFor="tipo_proveedor">Tipo de Proveedor</Label>
             <Select value={formData.tipo_proveedor} onValueChange={(value) => setFormData(prev => ({ ...prev, tipo_proveedor: value }))}>
               <SelectTrigger>
@@ -141,25 +197,92 @@ export function ProveedorForm({ isOpen, onClose, onSubmit, title, initialData }:
             </Select>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <Label htmlFor="calle">Calle</Label>
+              <Input
+                id="calle"
+                type="text"
+                value={formData.calle}
+                onChange={(e) => setFormData(prev => ({ ...prev, calle: e.target.value }))}
+                placeholder="Nombre de la calle"
+              />
+            </div>
+            <div>
+              <Label htmlFor="numero">Número</Label>
+              <Input
+                id="numero"
+                type="text"
+                value={formData.numero}
+                onChange={(e) => setFormData(prev => ({ ...prev, numero: e.target.value }))}
+                placeholder="1234"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="ciudad">Ciudad</Label>
+              <Input
+                id="ciudad"
+                type="text"
+                value={formData.ciudad}
+                onChange={(e) => setFormData(prev => ({ ...prev, ciudad: e.target.value }))}
+                placeholder="Ciudad"
+              />
+            </div>
+            <div>
+              <Label htmlFor="provincia">Provincia</Label>
+              <Input
+                id="provincia"
+                type="text"
+                value={formData.provincia}
+                onChange={(e) => setFormData(prev => ({ ...prev, provincia: e.target.value }))}
+                placeholder="Provincia"
+              />
+            </div>
+            <div>
+              <Label htmlFor="codigo_postal">Código Postal</Label>
+              <Input
+                id="codigo_postal"
+                type="text"
+                value={formData.codigo_postal}
+                onChange={(e) => setFormData(prev => ({ ...prev, codigo_postal: e.target.value }))}
+                placeholder="1234"
+              />
+            </div>
+          </div>
+
           <div>
-            <Label htmlFor="direccion">Dirección</Label>
+            <Label htmlFor="direccion">Dirección Completa (Opcional)</Label>
             <Input
               id="direccion"
               type="text"
               value={formData.direccion}
               onChange={(e) => setFormData(prev => ({ ...prev, direccion: e.target.value }))}
-              placeholder="Dirección completa"
+              placeholder="Dirección completa alternativa"
             />
           </div>
 
           <div>
-            <Label htmlFor="notas">Notas</Label>
+            <Label htmlFor="notas">Notas Públicas</Label>
             <Textarea
               id="notas"
               value={formData.notas}
               onChange={(e) => setFormData(prev => ({ ...prev, notas: e.target.value }))}
-              placeholder="Notas adicionales sobre el proveedor"
-              rows={3}
+              placeholder="Notas generales sobre el proveedor"
+              rows={2}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="notas_internas">Notas Internas</Label>
+            <Textarea
+              id="notas_internas"
+              value={formData.notas_internas}
+              onChange={(e) => setFormData(prev => ({ ...prev, notas_internas: e.target.value }))}
+              placeholder="Notas internas privadas (condiciones especiales, contactos, etc.)"
+              rows={2}
             />
           </div>
 

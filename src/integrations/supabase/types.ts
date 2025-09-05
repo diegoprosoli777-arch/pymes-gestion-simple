@@ -104,6 +104,13 @@ export type Database = {
             referencedRelation: "proveedores"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_compras_proveedor"
+            columns: ["proveedor_id"]
+            isOneToOne: false
+            referencedRelation: "proveedores"
+            referencedColumns: ["id"]
+          },
         ]
       }
       gastos: {
@@ -221,6 +228,20 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_pagos_compra"
+            columns: ["compra_id"]
+            isOneToOne: false
+            referencedRelation: "compras_proveedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_pagos_proveedor"
+            columns: ["proveedor_id"]
+            isOneToOne: false
+            referencedRelation: "proveedores"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pagos_proveedores_compra_id_fkey"
             columns: ["compra_id"]
@@ -356,7 +377,11 @@ export type Database = {
       proveedores: {
         Row: {
           activo: boolean | null
+          calle: string | null
+          ciudad: string | null
+          codigo_postal: string | null
           created_at: string
+          cuit_dni: string | null
           direccion: string | null
           email: string | null
           empresa: string | null
@@ -364,13 +389,21 @@ export type Database = {
           id: string
           nombre: string
           notas: string | null
+          notas_internas: string | null
+          numero: string | null
+          provincia: string | null
+          rubro: string | null
           telefono: string | null
           tipo_proveedor: string | null
           updated_at: string
         }
         Insert: {
           activo?: boolean | null
+          calle?: string | null
+          ciudad?: string | null
+          codigo_postal?: string | null
           created_at?: string
+          cuit_dni?: string | null
           direccion?: string | null
           email?: string | null
           empresa?: string | null
@@ -378,13 +411,21 @@ export type Database = {
           id?: string
           nombre: string
           notas?: string | null
+          notas_internas?: string | null
+          numero?: string | null
+          provincia?: string | null
+          rubro?: string | null
           telefono?: string | null
           tipo_proveedor?: string | null
           updated_at?: string
         }
         Update: {
           activo?: boolean | null
+          calle?: string | null
+          ciudad?: string | null
+          codigo_postal?: string | null
           created_at?: string
+          cuit_dni?: string | null
           direccion?: string | null
           email?: string | null
           empresa?: string | null
@@ -392,6 +433,10 @@ export type Database = {
           id?: string
           nombre?: string
           notas?: string | null
+          notas_internas?: string | null
+          numero?: string | null
+          provincia?: string | null
+          rubro?: string | null
           telefono?: string | null
           tipo_proveedor?: string | null
           updated_at?: string

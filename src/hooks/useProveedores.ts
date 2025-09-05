@@ -5,14 +5,22 @@ import toast from 'react-hot-toast';
 export interface Proveedor {
   id: string;
   nombre: string;
+  cuit_dni?: string;
   telefono?: string;
   email?: string;
   empresa?: string;
   especialidad?: string;
   tipo_proveedor?: string;
+  rubro?: string;
   activo?: boolean;
   direccion?: string;
+  calle?: string;
+  numero?: string;
+  ciudad?: string;
+  provincia?: string;
+  codigo_postal?: string;
   notas?: string;
+  notas_internas?: string;
   created_at: string;
   updated_at: string;
 }
