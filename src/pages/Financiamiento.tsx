@@ -11,7 +11,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { useFinanciamiento } from "@/hooks/useFinanciamiento";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 
 export default function Financiamiento() {
   const { flujoCaja, kpisFinancieros, loading, sugerencias } = useFinanciamiento();
@@ -173,28 +173,56 @@ export default function Financiamiento() {
               <TrendingUp className="h-5 w-5 text-primary" />
               <span>Flujo de Caja Mensual</span>
             </CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Análisis de ingresos, egresos y balance mensual
+            </p>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.2)" />
+            <div className="mb-4 flex flex-wrap gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-green-500 rounded"></div>
+                <span>Ingresos</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <span>Egresos</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                <span>Balance Neto</span>
+              </div>
+            </div>
+            <ResponsiveContainer width="100%" height={350}>
+              <LineChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.3)" />
                 <XAxis 
                   dataKey="mes" 
-                  stroke="hsl(var(--foreground) / 0.7)"
+                  stroke="hsl(var(--foreground) / 0.8)"
                   fontSize={12}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                 />
                 <YAxis 
-                  stroke="hsl(var(--foreground) / 0.7)"
+                  stroke="hsl(var(--foreground) / 0.8)"
                   fontSize={12}
-                  tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  tickFormatter={(value) => `$${(Number(value) / 1000).toFixed(0)}K`}
                 />
                 <Tooltip 
-                  formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
-                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  formatter={(value, name) => [
+                    `$${Number(value).toLocaleString('es-AR', { minimumFractionDigits: 0 })}`, 
+                    name === 'ingresos' ? '💰 Ingresos' : 
+                    name === 'egresos' ? '💸 Egresos' : 
+                    '📊 Balance Neto'
+                  ]}
+                  labelFormatter={(label) => `📅 ${label}`}
+                  labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
                   contentStyle={{ 
-                    backgroundColor: 'hsl(var(--background))', 
+                    backgroundColor: 'hsl(var(--card))', 
                     border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
                   }}
                 />
                 <Line 
@@ -202,27 +230,27 @@ export default function Financiamiento() {
                   dataKey="ingresos" 
                   stroke="#10B981" 
                   strokeWidth={3} 
-                  name="Ingresos"
-                  dot={{ fill: "#10B981", r: 4 }}
-                  activeDot={{ r: 6, fill: "#10B981" }}
+                  name="ingresos"
+                  dot={{ fill: "#10B981", r: 5, strokeWidth: 2, stroke: "#fff" }}
+                  activeDot={{ r: 7, fill: "#10B981", strokeWidth: 2, stroke: "#fff" }}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="egresos" 
                   stroke="#EF4444" 
                   strokeWidth={3} 
-                  name="Egresos"
-                  dot={{ fill: "#EF4444", r: 4 }}
-                  activeDot={{ r: 6, fill: "#EF4444" }}
+                  name="egresos"
+                  dot={{ fill: "#EF4444", r: 5, strokeWidth: 2, stroke: "#fff" }}
+                  activeDot={{ r: 7, fill: "#EF4444", strokeWidth: 2, stroke: "#fff" }}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="balance" 
                   stroke="#3B82F6" 
                   strokeWidth={4} 
-                  name="Balance"
-                  dot={{ fill: "#3B82F6", r: 5 }}
-                  activeDot={{ r: 7, fill: "#3B82F6" }}
+                  name="balance"
+                  dot={{ fill: "#3B82F6", r: 6, strokeWidth: 2, stroke: "#fff" }}
+                  activeDot={{ r: 8, fill: "#3B82F6", strokeWidth: 2, stroke: "#fff" }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -236,38 +264,70 @@ export default function Financiamiento() {
               <BarChart3 className="h-5 w-5 text-primary" />
               <span>Balance Acumulado Mensual</span>
             </CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Evolución del capital disponible acumulado mes a mes
+            </p>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.2)" />
+            <div className="mb-4 flex items-center gap-2 text-sm">
+              <div className="w-4 h-4 bg-purple-500 rounded"></div>
+              <span>Balance Acumulado</span>
+              <div className="ml-4 text-xs text-muted-foreground">
+                Suma progresiva de todos los balances mensuales
+              </div>
+            </div>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={chartData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground) / 0.3)" />
                 <XAxis 
                   dataKey="mes" 
-                  stroke="hsl(var(--foreground) / 0.7)"
+                  stroke="hsl(var(--foreground) / 0.8)"
                   fontSize={12}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                 />
                 <YAxis 
-                  stroke="hsl(var(--foreground) / 0.7)"
+                  stroke="hsl(var(--foreground) / 0.8)"
                   fontSize={12}
-                  tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  tickFormatter={(value) => `$${(Number(value) / 1000).toFixed(0)}K`}
                 />
                 <Tooltip 
-                  formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
-                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  formatter={(value) => [
+                    `$${Number(value).toLocaleString('es-AR', { minimumFractionDigits: 0 })}`,
+                    '💰 Balance Acumulado'
+                  ]}
+                  labelFormatter={(label) => `📅 ${label}`}
+                  labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
                   contentStyle={{ 
-                    backgroundColor: 'hsl(var(--background))', 
+                    backgroundColor: 'hsl(var(--card))', 
                     border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
                   }}
                 />
                 <Bar 
                   dataKey="acumulado" 
-                  fill="#8B5CF6" 
                   name="Balance Acumulado"
-                  radius={[4, 4, 0, 0]}
-                />
+                  radius={[6, 6, 0, 0]}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.acumulado >= 0 ? "#10B981" : "#EF4444"} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
+            <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded"></div>
+                <span>Balance Positivo</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded"></div>
+                <span>Balance Negativo</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

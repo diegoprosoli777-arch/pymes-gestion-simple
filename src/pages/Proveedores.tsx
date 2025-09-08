@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { MainLayout } from '@/components/Layout/MainLayout';
+import MainLayout from '@/components/Layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -108,7 +108,7 @@ export default function Proveedores() {
     ];
     
     proveedorCompras.forEach(compra => {
-      comprasData.push([compra.fecha, compra.concepto, compra.monto_total, compra.estado]);
+      comprasData.push([compra.fecha, compra.concepto, compra.monto_total.toString(), compra.estado]);
     });
     
     const ws = XLSX.utils.aoa_to_sheet(comprasData);
