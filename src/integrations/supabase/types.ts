@@ -25,6 +25,7 @@ export type Database = {
           notas: string | null
           telefono: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -36,6 +37,7 @@ export type Database = {
           notas?: string | null
           telefono?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -47,6 +49,7 @@ export type Database = {
           notas?: string | null
           telefono?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -65,6 +68,7 @@ export type Database = {
           numero_factura: string | null
           proveedor_id: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           concepto: string
@@ -80,6 +84,7 @@ export type Database = {
           numero_factura?: string | null
           proveedor_id: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           concepto?: string
@@ -95,6 +100,7 @@ export type Database = {
           numero_factura?: string | null
           proveedor_id?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -124,6 +130,7 @@ export type Database = {
           proveedor: string
           tipo: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           categoria_fiscal?: string | null
@@ -135,6 +142,7 @@ export type Database = {
           proveedor: string
           tipo?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           categoria_fiscal?: string | null
@@ -146,6 +154,7 @@ export type Database = {
           proveedor?: string
           tipo?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -158,6 +167,7 @@ export type Database = {
           id: string
           tipo: string
           titulo: string
+          user_id: string | null
         }
         Insert: {
           cliente_id?: string | null
@@ -167,6 +177,7 @@ export type Database = {
           id?: string
           tipo: string
           titulo: string
+          user_id?: string | null
         }
         Update: {
           cliente_id?: string | null
@@ -176,6 +187,7 @@ export type Database = {
           id?: string
           tipo?: string
           titulo?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -200,6 +212,7 @@ export type Database = {
           numero_referencia: string | null
           proveedor_id: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           compra_id?: string | null
@@ -213,6 +226,7 @@ export type Database = {
           numero_referencia?: string | null
           proveedor_id: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           compra_id?: string | null
@@ -226,6 +240,7 @@ export type Database = {
           numero_referencia?: string | null
           proveedor_id?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -268,6 +283,7 @@ export type Database = {
           notas: string | null
           probabilidad: number | null
           updated_at: string
+          user_id: string | null
           valor_estimado: number | null
         }
         Insert: {
@@ -279,6 +295,7 @@ export type Database = {
           notas?: string | null
           probabilidad?: number | null
           updated_at?: string
+          user_id?: string | null
           valor_estimado?: number | null
         }
         Update: {
@@ -290,6 +307,7 @@ export type Database = {
           notas?: string | null
           probabilidad?: number | null
           updated_at?: string
+          user_id?: string | null
           valor_estimado?: number | null
         }
         Relationships: [
@@ -313,6 +331,7 @@ export type Database = {
           notas: string | null
           objetivo_ventas: number | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           año: number
@@ -324,6 +343,7 @@ export type Database = {
           notas?: string | null
           objetivo_ventas?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           año?: number
@@ -335,6 +355,7 @@ export type Database = {
           notas?: string | null
           objetivo_ventas?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -349,6 +370,7 @@ export type Database = {
           stock_actual: number
           stock_minimo: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           categoria?: string
@@ -360,6 +382,7 @@ export type Database = {
           stock_actual?: number
           stock_minimo?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           categoria?: string
@@ -371,6 +394,7 @@ export type Database = {
           stock_actual?: number
           stock_minimo?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -396,6 +420,7 @@ export type Database = {
           telefono: string | null
           tipo_proveedor: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           activo?: boolean | null
@@ -418,6 +443,7 @@ export type Database = {
           telefono?: string | null
           tipo_proveedor?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           activo?: boolean | null
@@ -440,6 +466,7 @@ export type Database = {
           telefono?: string | null
           tipo_proveedor?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -456,6 +483,7 @@ export type Database = {
           tipo: string
           titulo: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           cliente_id?: string | null
@@ -469,6 +497,7 @@ export type Database = {
           tipo?: string
           titulo: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           cliente_id?: string | null
@@ -482,6 +511,7 @@ export type Database = {
           tipo?: string
           titulo?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -506,6 +536,7 @@ export type Database = {
           notas: string | null
           tipo: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           completado?: boolean | null
@@ -519,6 +550,7 @@ export type Database = {
           notas?: string | null
           tipo?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           completado?: boolean | null
@@ -532,6 +564,7 @@ export type Database = {
           notas?: string | null
           tipo?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -549,6 +582,7 @@ export type Database = {
           metodo_pago: string
           monto_total: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           cliente_id?: string | null
@@ -563,6 +597,7 @@ export type Database = {
           metodo_pago?: string
           monto_total?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           cliente_id?: string | null
@@ -577,6 +612,7 @@ export type Database = {
           metodo_pago?: string
           monto_total?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {

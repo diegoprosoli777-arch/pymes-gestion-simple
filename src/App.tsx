@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import toast, { Toaster as HotToaster } from 'react-hot-toast';
 import MainLayout from "./components/Layout/MainLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Productos from "./pages/Productos";
 import Clientes from "./pages/Clientes";
@@ -28,7 +30,8 @@ const App = () => (
       <HotToaster position="top-right" />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<MainLayout />}>
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route index element={<Dashboard />} />
             <Route path="productos" element={<Productos />} />
             <Route path="clientes" element={<Clientes />} />

@@ -20,9 +20,13 @@ export const useGastos = () => {
 
   const fetchGastos = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { data, error } = await supabase
         .from('gastos')
         .select('*')
+        .eq('user_id', user.id)
         .order('fecha', { ascending: false });
       
       if (error) throw error;
@@ -37,9 +41,12 @@ export const useGastos = () => {
 
   const createGasto = async (gasto: Omit<Gasto, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { data, error } = await supabase
         .from('gastos')
-        .insert([gasto])
+        .insert([{ ...gasto, user_id: user.id }])
         .select()
         .single();
       

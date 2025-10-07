@@ -63,9 +63,13 @@ export const useProveedores = () => {
 
   const fetchProveedores = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { data, error } = await supabase
         .from('proveedores')
         .select('*')
+        .eq('user_id', user.id)
         .order('nombre');
       
       if (error) throw error;
@@ -80,9 +84,12 @@ export const useProveedores = () => {
 
   const createProveedor = async (proveedor: Omit<Proveedor, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { error } = await supabase
         .from('proveedores')
-        .insert([proveedor]);
+        .insert([{ ...proveedor, user_id: user.id }]);
       
       if (error) throw error;
       
@@ -134,9 +141,13 @@ export const useProveedores = () => {
   // Compras functions
   const fetchCompras = async (proveedorId?: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       let query = supabase
         .from('compras_proveedores')
         .select('*')
+        .eq('user_id', user.id)
         .order('fecha', { ascending: false });
       
       if (proveedorId) {
@@ -155,9 +166,12 @@ export const useProveedores = () => {
 
   const createCompra = async (compra: Omit<CompraProveedor, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { error } = await supabase
         .from('compras_proveedores')
-        .insert([compra]);
+        .insert([{ ...compra, user_id: user.id }]);
       
       if (error) throw error;
       
@@ -196,9 +210,13 @@ export const useProveedores = () => {
   // Pagos functions
   const fetchPagos = async (proveedorId?: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       let query = supabase
         .from('pagos_proveedores')
         .select('*')
+        .eq('user_id', user.id)
         .order('fecha', { ascending: false });
       
       if (proveedorId) {
@@ -217,9 +235,12 @@ export const useProveedores = () => {
 
   const createPago = async (pago: Omit<PagoProveedor, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { error } = await supabase
         .from('pagos_proveedores')
-        .insert([pago]);
+        .insert([{ ...pago, user_id: user.id }]);
       
       if (error) throw error;
       

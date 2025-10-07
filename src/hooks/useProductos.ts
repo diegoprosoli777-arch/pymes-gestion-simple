@@ -20,9 +20,13 @@ export const useProductos = () => {
 
   const fetchProductos = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { data, error } = await supabase
         .from('productos')
         .select('*')
+        .eq('user_id', user.id)
         .order('nombre');
       
       if (error) throw error;
@@ -37,9 +41,12 @@ export const useProductos = () => {
 
   const createProducto = async (producto: Omit<Producto, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { data, error } = await supabase
         .from('productos')
-        .insert([producto])
+        .insert([{ ...producto, user_id: user.id }])
         .select()
         .single();
       

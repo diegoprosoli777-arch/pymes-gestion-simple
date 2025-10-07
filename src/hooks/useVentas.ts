@@ -44,6 +44,9 @@ export const useVentas = () => {
 
   const fetchVentas = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { data, error } = await supabase
         .from('ventas')
         .select(`
@@ -59,6 +62,7 @@ export const useVentas = () => {
             producto:productos(nombre)
           )
         `)
+        .eq('user_id', user.id)
         .order('fecha', { ascending: false });
       
       if (error) throw error;
@@ -76,10 +80,13 @@ export const useVentas = () => {
     items: Omit<VentaItem, 'id' | 'venta_id' | 'created_at'>[]
   ) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       // Create venta
       const { data: ventaData, error: ventaError } = await supabase
         .from('ventas')
-        .insert([venta])
+        .insert([{ ...venta, user_id: user.id }])
         .select()
         .single();
       
