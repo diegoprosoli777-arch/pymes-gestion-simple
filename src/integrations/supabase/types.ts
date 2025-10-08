@@ -25,7 +25,7 @@ export type Database = {
           notas: string | null
           telefono: string | null
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -37,7 +37,7 @@ export type Database = {
           notas?: string | null
           telefono?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -49,7 +49,7 @@ export type Database = {
           notas?: string | null
           telefono?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -68,7 +68,7 @@ export type Database = {
           numero_factura: string | null
           proveedor_id: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           concepto: string
@@ -84,7 +84,7 @@ export type Database = {
           numero_factura?: string | null
           proveedor_id: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           concepto?: string
@@ -100,7 +100,7 @@ export type Database = {
           numero_factura?: string | null
           proveedor_id?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -130,7 +130,7 @@ export type Database = {
           proveedor: string
           tipo: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           categoria_fiscal?: string | null
@@ -142,7 +142,7 @@ export type Database = {
           proveedor: string
           tipo?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           categoria_fiscal?: string | null
@@ -154,7 +154,7 @@ export type Database = {
           proveedor?: string
           tipo?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -167,7 +167,7 @@ export type Database = {
           id: string
           tipo: string
           titulo: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           cliente_id?: string | null
@@ -177,7 +177,7 @@ export type Database = {
           id?: string
           tipo: string
           titulo: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           cliente_id?: string | null
@@ -187,7 +187,7 @@ export type Database = {
           id?: string
           tipo?: string
           titulo?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -212,7 +212,7 @@ export type Database = {
           numero_referencia: string | null
           proveedor_id: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           compra_id?: string | null
@@ -226,7 +226,7 @@ export type Database = {
           numero_referencia?: string | null
           proveedor_id: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           compra_id?: string | null
@@ -240,7 +240,7 @@ export type Database = {
           numero_referencia?: string | null
           proveedor_id?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -283,7 +283,7 @@ export type Database = {
           notas: string | null
           probabilidad: number | null
           updated_at: string
-          user_id: string | null
+          user_id: string
           valor_estimado: number | null
         }
         Insert: {
@@ -295,7 +295,7 @@ export type Database = {
           notas?: string | null
           probabilidad?: number | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
           valor_estimado?: number | null
         }
         Update: {
@@ -307,7 +307,7 @@ export type Database = {
           notas?: string | null
           probabilidad?: number | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
           valor_estimado?: number | null
         }
         Relationships: [
@@ -331,7 +331,7 @@ export type Database = {
           notas: string | null
           objetivo_ventas: number | null
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           año: number
@@ -343,7 +343,7 @@ export type Database = {
           notas?: string | null
           objetivo_ventas?: number | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           año?: number
@@ -355,7 +355,7 @@ export type Database = {
           notas?: string | null
           objetivo_ventas?: number | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -370,7 +370,7 @@ export type Database = {
           stock_actual: number
           stock_minimo: number
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           categoria?: string
@@ -382,7 +382,7 @@ export type Database = {
           stock_actual?: number
           stock_minimo?: number
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           categoria?: string
@@ -394,7 +394,7 @@ export type Database = {
           stock_actual?: number
           stock_minimo?: number
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -420,7 +420,7 @@ export type Database = {
           telefono: string | null
           tipo_proveedor: string | null
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           activo?: boolean | null
@@ -443,7 +443,7 @@ export type Database = {
           telefono?: string | null
           tipo_proveedor?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           activo?: boolean | null
@@ -466,7 +466,7 @@ export type Database = {
           telefono?: string | null
           tipo_proveedor?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -483,7 +483,7 @@ export type Database = {
           tipo: string
           titulo: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           cliente_id?: string | null
@@ -497,7 +497,7 @@ export type Database = {
           tipo?: string
           titulo: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           cliente_id?: string | null
@@ -511,7 +511,7 @@ export type Database = {
           tipo?: string
           titulo?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -536,7 +536,7 @@ export type Database = {
           notas: string | null
           tipo: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           completado?: boolean | null
@@ -550,7 +550,7 @@ export type Database = {
           notas?: string | null
           tipo?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           completado?: boolean | null
@@ -564,7 +564,7 @@ export type Database = {
           notas?: string | null
           tipo?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -582,7 +582,7 @@ export type Database = {
           metodo_pago: string
           monto_total: number
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           cliente_id?: string | null
@@ -597,7 +597,7 @@ export type Database = {
           metodo_pago?: string
           monto_total?: number
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Update: {
           cliente_id?: string | null
@@ -612,7 +612,7 @@ export type Database = {
           metodo_pago?: string
           monto_total?: number
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -671,7 +671,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      validate_cuit_dni: {
+        Args: { cuit_dni: string }
+        Returns: boolean
+      }
+      validate_email: {
+        Args: { email: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
